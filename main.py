@@ -160,8 +160,8 @@ def send_whatsapp_message():
 @app.route('/delete/<uuid:id>', methods=['GET'])
 def delete(id):
     deletion_date = datetime.now()
-    # Conectar ao banco de dados PostgreSQL
-    conexao = psycopg2.connect(**DATABASE_CONFIG)
+    db_config = DatabaseConfig.get_db_config()
+    conexao = psycopg2.connect(**db_config)
     cursor = conexao.cursor()
 
     # SQL para atualizar a coluna deletiondate
