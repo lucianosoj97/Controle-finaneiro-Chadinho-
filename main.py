@@ -5,7 +5,7 @@ from functions.list import obter_cadastros
 from functions.dashboard import get_dashboard_data
 from functions.edit import edit_person, update_person
 from functions.token import token_valido
-from database.config import DATABASE_CONFIG
+from database.config import DatabaseConfig
 import psycopg2
 import uuid
 from datetime import datetime

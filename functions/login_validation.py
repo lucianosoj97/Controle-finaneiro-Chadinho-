@@ -1,5 +1,5 @@
 import psycopg2
-from database.config import DATABASE_CONFIG
+from database.config import DatabaseConfig
 
 class LoginValidator:
     def __init__(self):
@@ -8,7 +8,9 @@ class LoginValidator:
 
     def conectar(self):
         try:
-            self.conexao = psycopg2.connect(**DATABASE_CONFIG)
+            # Aqui você obtém a configuração do banco de dados usando a classe DatabaseConfig
+            db_config = DatabaseConfig.get_db_config()
+            self.conexao = psycopg2.connect(**db_config)
             print("Conexão bem-sucedida!")
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
@@ -23,8 +25,8 @@ class LoginValidator:
         try:
             cursor = self.conexao.cursor()
             comando_sql_verificar_usuario = """
-                SELECT 1 FROM usuarios
-                WHERE email = %s AND senha = %s
+                SELECT 1 FROM usuário
+                WHERE username = %s AND password = %s
             """
             valores = (email, senha)
 

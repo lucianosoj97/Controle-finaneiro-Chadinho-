@@ -1,26 +1,20 @@
-import os
-import psycopg2
 import urllib.parse as urlparse
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+class DatabaseConfig:
+    @staticmethod
+    def get_db_config():
+        # Definir a URL do banco de dados diretamente no formato esperado por urlparse
+        # Exemplo: 'postgres://user:password@host:port/dbname'
+        # Você deve substituí-la pela URL real do seu banco de dados Supabase
+        DATABASE_URL = 'postgres://postgres.cpfwmmxlbytjrjcnlnjg:FHDSsnuzXbbA35sT@aws-0-us-east-1.pooler.supabase.com:5432/postgres'
 
-if DATABASE_URL:
-    url = urlparse.urlparse(DATABASE_URL)
-    db_config = {
-        'database': url.path[1:],
-        'user': url.username,
-        'password': url.password,
-        'host': url.hostname,
-        'port': url.port
-    }
-else:
-    # Sua configuração padrão ou de desenvolvimento
-    db_config = {
-        'host': 'ec2-44-206-18-218.compute-1.amazonaws.com',
-        'database': 'd23ojnd1ratrgv',
-        'user': 'jyaonnebrgerlp',
-        'password': '0ccf3e309091ee3c59ec42da55ed197a1e32300228bf43b8eee72b44b7d53b9a'
-    }
+        url = urlparse.urlparse(DATABASE_URL)
 
-# Conexão usando psycopg2, por exemplo
-conn = psycopg2.connect(**db_config)
+        # Construir e retornar um dicionário com as configurações de conexão
+        return {
+            "database": url.path[1:],  # Remove a '/' inicial do nome do banco de dados
+            "user": url.username,
+            "password": url.password,
+            "host": url.hostname,
+            "port": url.port
+        }

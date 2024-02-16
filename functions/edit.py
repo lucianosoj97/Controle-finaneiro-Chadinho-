@@ -1,6 +1,6 @@
 import psycopg2
 from flask import redirect, url_for, render_template
-from database.config import DATABASE_CONFIG
+from database.config import DatabaseConfig
 from datetime import datetime
 from decimal import Decimal
 import logging
@@ -10,7 +10,8 @@ logging.basicConfig(filename='update_person_log.log', level=logging.INFO)
 
 def edit_person(id):
     try:
-        conexao = psycopg2.connect(**DATABASE_CONFIG)
+        db_config = DatabaseConfig.get_db_config()
+        conexao = psycopg2.connect(**db_config)
         cursor = conexao.cursor()
 
         buscar_pessoa_query = """
@@ -45,7 +46,8 @@ def edit_person(id):
 
 def update_person(id, name, cpf, birth_date, address, value, percentage):
     try:
-        conexao = psycopg2.connect(**DATABASE_CONFIG)
+        db_config = DatabaseConfig.get_db_config()
+        conexao = psycopg2.connect(**db_config)
         cursor = conexao.cursor()
 
         # Obtenha a data atual
@@ -64,7 +66,7 @@ def update_person(id, name, cpf, birth_date, address, value, percentage):
         """
         cursor.execute(atualizar_pessoa_query, (name, cpf, birth_date, address, value, percentage, valor_total, valor_descontado, current_date, id))
         conexao.commit()
-
+        cursor.close()
         conexao.close()
 
         # Log da atualização bem-sucedida

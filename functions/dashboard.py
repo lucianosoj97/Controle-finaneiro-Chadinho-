@@ -1,10 +1,11 @@
 import psycopg2
-from database.config import DATABASE_CONFIG
+from database.config import DatabaseConfig
 from datetime import date
 
 def get_dashboard_data():
     try:
-        conexao = psycopg2.connect(**DATABASE_CONFIG)
+        db_config = DatabaseConfig.get_db_config()
+        conexao = psycopg2.connect(**db_config)
         cursor = conexao.cursor()
 
         # Obter a data do mês atual
@@ -13,7 +14,7 @@ def get_dashboard_data():
 
         # Consultar o valor limpo
         cursor.execute("""
-            SELECT SUM(owner_value)
+            SELECT SUM(owner_value::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL
@@ -22,7 +23,7 @@ def get_dashboard_data():
 
         # Consultar o valor pago
         cursor.execute("""
-            SELECT SUM(value)
+            SELECT SUM(value::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL
@@ -31,7 +32,7 @@ def get_dashboard_data():
 
         # Consultar a porcentagem de leads
         cursor.execute("""
-            SELECT SUM(lead_value)
+            SELECT SUM(lead_value::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL

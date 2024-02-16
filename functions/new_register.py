@@ -1,5 +1,5 @@
 import psycopg2
-from database.config import DATABASE_CONFIG
+from database.config import DatabaseConfig
 from decimal import Decimal
 from datetime import datetime
 from flask import flash, redirect, url_for
@@ -7,7 +7,8 @@ from flask import flash, redirect, url_for
 
 def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago):
     try:
-        conexao = psycopg2.connect(**DATABASE_CONFIG)
+        db_config = DatabaseConfig.get_db_config()
+        conexao = psycopg2.connect(**db_config)
         valor_depositado_formatado = Decimal(valor_depositado.replace('R$', '').replace('.', '').replace(',', ''))
         porcentagem_pago_formatada = Decimal(porcentagem_pago.replace('%', ''))
         current_date = datetime.now().strftime('%Y-%m-%d')
@@ -24,6 +25,7 @@ def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentage
 
         cursor.execute(inserir_registro_query, (nome, cpf, birth_date, endereco, valor_depositado_formatado, valor_descontado, valor_total, porcentagem_pago_formatada, current_date))
         conexao.commit()
+        cursor.close() 
         conexao.close()
 
         flash("Registro criado com sucesso!", "success")
