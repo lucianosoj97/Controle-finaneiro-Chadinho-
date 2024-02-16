@@ -98,9 +98,16 @@ def list_people():
     formatted_cadastros = []
     for cadastro in cadastros:
         formatted_cadastro = list(cadastro)
-        formatted_cadastro[5] = '{:,.2f}'.format(formatted_cadastro[5]).replace(',', 'v').replace('.', ',').replace('v', '.')
-        formatted_cadastro[5] = f'R$ {cadastro[5]}'  # Formata o valor monetário
-        formatted_cadastro[6] = f'{cadastro[6]}%'  # Formata o valor monetário
+        try:
+            # Convertendo a string para float antes de formatar
+            valor_float = float(formatted_cadastro[5])
+            # Formatação como valor monetário
+            formatted_cadastro[5] = 'R$ {:,.2f}'.format(valor_float).replace(',', 'v').replace('.', ',').replace('v', '.')
+        except ValueError:
+            # Caso não seja possível converter para float, mantém o valor original ou trata o erro
+            formatted_cadastro[5] = f'R$ {formatted_cadastro[5]}'
+        # Presumindo que cadastro[6] é um valor numérico e pode ser diretamente formatado como porcentagem
+        formatted_cadastro[6] = f'{cadastro[6]}%'
         formatted_cadastros.append(formatted_cadastro)
 
     return render_template('list.html', people=formatted_cadastros)
