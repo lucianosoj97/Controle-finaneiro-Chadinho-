@@ -1,0 +1,15 @@
+blinker==1.7.0
+click==8.1.7
+colorama==0.4.6
+distlib==0.3.8
+filelock==3.13.1
+Flask==3.0.2
+flesk==0.1.1
+itsdangerous==2.1.2
+Jinja2==3.1.2
+Markdown==3.5.1
+MarkupSafe==2.1.3
+platformdirs==4.2.0
+psycopg2==2.9.9
+virtualenv==20.25.0
+Werkzeug==3.0.1

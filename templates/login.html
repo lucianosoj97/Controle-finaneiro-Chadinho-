@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/menu.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="vid-container">
+            <div class="inner-container">
+                <div class="box">
+                    <h1>Login</h1>
+                    <form action="/login" method="post">
+                        <input type="text" placeholder="Username" name="username"/>
+                        <input type="password" placeholder="Password" name="password"/>
+                        <button type="submit">Login</button>
+                    </form>
+                    <a href="/send_whatsapp_message" class="btn">Precisa de um acesso? Cadastro</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Posicionando a imagem no final do body para que fique no rodapé -->
+    <img src="/static/image/Instagram.png" class="img-logo">
+</body>
+</html>

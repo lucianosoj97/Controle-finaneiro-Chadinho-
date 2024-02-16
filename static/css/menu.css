@@ -1,0 +1,102 @@
+/* Reset básico para remover margens e padding padrões */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif; /* Usando Arial como fonte padrão */
+    background-color: rgb(201, 194, 185);
+}
+
+/* Estilizando o container de login para centralizar seu conteúdo */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Altura total da viewport */
+    flex-direction: column; /* Organiza os itens em coluna */
+}
+
+/* Adaptações para o .vid-container */
+.vid-container {
+    width: 100%;
+    max-width: 400px; /* Largura máxima do formulário ajustada aqui */
+}
+
+
+:root {
+    --tamanho-logo: 300px; /* Tamanho inicial da imagem */
+}
+
+/* Centralizando o logo com tamanho ajustável via variável CSS */
+.img-logo {
+    display: block;
+    width: var(--tamanho-logo); /* Use a variável ou defina um valor específico */
+    position: fixed; /* Ou 'fixed', dependendo de sua preferência */
+    bottom: 0; /* Alinha a imagem na parte inferior */
+    left: 0; /* Alinha a imagem à esquerda */
+    transform: translateX(-10%); /* Não é necessário ajustar a posição no eixo X */
+}
+/* Estilizando o container do vídeo e centralizando o conteúdo */
+.vid-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20%; /* Altura ajustável conforme a necessidade */
+}
+
+/* Estilizando o container interno */
+.inner-container {
+    width: 100%;
+    max-width: 400px; /* Largura máxima do formulário */
+}
+
+/* Estilização básica da caixa de login */
+.box {
+    background-color: #f2f2f2; /* Cor de fundo */
+    padding: 40px;
+    margin: 20px auto; /* Margem para centralizar */
+    border-radius: 8px; /* Bordas arredondadas */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Estilizando os inputs */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0; /* Margem para separar os inputs */
+    border: 1px solid #ccc; /* Borda */
+    border-radius: 4px; /* Bordas arredondadas */
+}
+
+/* Estilizando o botão de submit */
+button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none;
+    border-radius: 4px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor do mouse */
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+}
+
+/* Estilizando o link de cadastro */
+.btn {
+    display: block;
+    text-align: center;
+    margin-top: 20px; /* Margem acima do link */
+    color: #007bff; /* Cor do link */
+    text-decoration: none; /* Removendo sublinhado */
+}
+
+.box h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center; /* Centraliza o texto */
+}

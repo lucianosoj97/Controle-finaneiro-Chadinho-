@@ -1,0 +1,102 @@
+.edit-container {
+    width: 80%;
+    max-width: 800px;
+    margin: 140px auto; /* centraliza o formulário e o move mais para cima */
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza os itens verticalmente */
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* Ocupa toda a largura disponível */
+}
+
+.edit-label {
+    margin-bottom: 10px;
+}
+
+.edit-input {
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%; /* Definir a largura como 100% para ocupar todo o espaço disponível */
+    box-sizing: border-box; /* Garantir que o padding e a borda não aumentem a largura do input */
+}
+
+/* Adicione esta regra para definir a largura fixa para todos os inputs */
+.edit-form input[type="text"],
+.edit-form input[type="email"],
+.edit-form input[type="number"] {
+    width: calc(100% - 18px); /* Defina a largura como 100% menos o espaçamento interno */
+    max-width: 400px; /* Defina uma largura máxima fixa */
+}
+
+.edit-button {
+    padding: 10px 20px; /* Ajusta o preenchimento do botão */
+    background-color: #007bff; /* Cor de fundo azul */
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+    background-color: #0056b3; /* Cor de fundo azul mais escura quando hover */
+}
+
+.custom-navbar {
+    width: 100%;
+    background-color: #007bff;
+    align-items: flex-start;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+}
+
+.navbar-nav .nav-item {
+    width: auto;
+    text-align: center;
+}
+
+.navbar-nav .nav-link {
+    display: block;
+    padding: 1rem;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #0056b3;
+}
+
+:root {
+    --tamanho-logo: 300px; /* Tamanho inicial da imagem */
+}
+
+/* Centralizando o logo com tamanho ajustável via variável CSS */
+.img-logo {
+    display: block;
+    width: var(--tamanho-logo); /* Use a variável ou defina um valor específico */
+    position: fixed; /* Ou 'fixed', dependendo de sua preferência */
+    bottom: 0; /* Alinha a imagem na parte inferior */
+    left: 0; /* Alinha a imagem à esquerda */
+    transform: translateX(-10%); /* Não é necessário ajustar a posição no eixo X */
+}

@@ -1,0 +1,97 @@
+/* Container interno */
+.inner-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+body {
+    background-color: #ffffff9f; /* Altere esta cor para a cor desejada */
+}
+
+/* Box de login */
+.box {
+    background-color: rgba(8, 6, 6, 0);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Defina a largura máxima do quadrado */
+    width: 100%; /* Garante que o quadrado ocupe toda a largura do container pai */
+    margin: 0 auto; /* Centraliza horizontalmente */
+}
+
+/* Estilo para o link de botão */
+.btn {
+    display: inline-block; /* Torna o link um elemento em linha com largura e altura */
+    padding: 5px 95px; /* Adiciona preenchimento interno ao botão */
+    background-color: #ffffff; /* Cor de fundo do botão */
+    color: #000000; /* Cor do texto do botão */
+    text-decoration: none; /* Remove sublinhado padrão */
+    border-radius: 5px; /* Adiciona borda arredondada ao botão */
+    transition: background-color 0.3s ease; /* Adiciona transição suave na cor de fundo */
+}
+
+/* Estilo para o link de botão quando hover (sobre) */
+.btn:hover {
+    color: #47da4c; /* Altera a cor de fundo quando o mouse está sobre o botão */
+}
+
+/* Título do login */
+.box h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center; /* Centraliza o texto */
+}
+
+/* Inputs do formulário */
+.box input {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botão de login */
+.box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Link de cadastro */
+.box p {
+    margin-top: 15px;
+    text-align: center; /* Centraliza o texto */
+}
+
+/* Rodapé */
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Imagem da empresa */
+.logo {
+    max-width: 80%;
+    height: 10;
+}
+/* Estilo para a imagem */
+.img-logo {
+    display: block; /* Define a imagem como um elemento de bloco */
+    width: 300px; /* Largura da imagem */
+    height: auto; /* Altura automática para manter a proporção */
+    margin: 100px auto 0 !important;
+
+}

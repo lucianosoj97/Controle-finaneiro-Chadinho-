@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cadastros</title>
+    <link rel="stylesheet" href="/static/css/list.css">
+</head>
+<body>
+    <nav class="navbar custom-navbar flex-column custom-bg-color">
+        <ul class="navbar-nav flex-row"> <!-- Adicionei a classe flex-row -->
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">Tela Inicial</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">Novo cadastro</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/">Sair</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Lista de Cadastros</h1>
+        <table>
+            <tr>
+                <th>Nome Completo</th>
+                <th>CPF</th>
+                <th>Data de Nasc.</th>
+                <th>Endereço</th>
+                <th>Valor Dep.</th>
+                <th>Porcentagem Paga</th>
+                <th></th>
+                <th></th>
+
+            </tr>
+            {% for cadastro in people %}
+            <tr>
+                <td>{{ cadastro[1] }}</td>
+                <td>{{ cadastro[2] }}</td>
+                <td>{{ cadastro[3] }}</td>
+                <td>{{ cadastro[4] }}</td>
+                <td>{{ cadastro[5] }}</td>
+                <td>{{ cadastro[6] }}</td>
+                <td><a href="/edit/{{ cadastro[0] }}">Editar</a></td>
+                <td><a href="/delete/{{ cadastro[0] }}">Excluir</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <img src="/static/image/Instagram.png" class="img-logo">
+</body>
+</html>

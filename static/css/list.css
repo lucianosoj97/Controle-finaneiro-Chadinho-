@@ -1,0 +1,101 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 100px 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 70px auto; /* Centraliza o container horizontalmente e aumenta a margem superior */
+    padding: 30px; /* Aumenta o padding para 30px */
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+h1 {
+    color: #000000;
+    text-align: center;
+    margin-top: 0; /* Removi o margin-top para que o título fique no topo */
+    margin-bottom: 40px; /* Adicionei uma margem inferior de 40px para separar o título da tabela */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap; /* Evita a quebra de texto */
+}
+
+th {
+    background-color: #0056A6;
+    color: #fff;
+}
+
+
+
+a {
+    text-decoration: none;
+    color: #0056A6;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.custom-navbar {
+    width: 100%; /* Garante que a barra de navegação ocupe toda a largura da tela */
+    background-color: #0056A6; /* Cor de fundo da barra de navegação */
+    align-items: flex-start; /* Alinha os itens no topo da navbar */
+    position: fixed; /* Fixa a navbar na parte superior da tela */
+    top: 0; /* Alinha a navbar no topo da página */
+    z-index: 999; /* Define a ordem de empilhamento para garantir que a navbar esteja acima do conteúdo */
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: space-around; /* Distribui os itens igualmente ao longo da barra de navegação */
+    width: 100%; /* Faça com que a largura do menu ocupe todo o espaço disponível */
+    list-style-type: none; /* Remove os marcadores de lista padrão */
+    padding: 0; /* Remove o preenchimento padrão da lista */
+}
+
+.navbar-nav .nav-item {
+    width: auto; /* Define a largura automática para cada item do menu */
+    text-align: center; /* Centralize o texto */
+}
+
+.navbar-nav .nav-link {
+    display: block; /* Transforma o link em um elemento de bloco */
+    padding: 1rem; /* Adiciona preenchimento ao redor do texto do link */
+    color: #fff; /* Cor do texto do link */
+    text-decoration: none; /* Remove o sublinhado padrão do link */
+    transition: background-color 0.3s ease; /* Adiciona uma transição suave ao fundo do link */
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #0056A6; /* Cor de fundo do link ao passar o mouse sobre ele */
+}
+
+:root {
+    --tamanho-logo: 300px; /* Tamanho inicial da imagem */
+}
+
+/* Centralizando o logo com tamanho ajustável via variável CSS */
+.img-logo {
+    display: block;
+    width: var(--tamanho-logo); /* Use a variável ou defina um valor específico */
+    position: fixed; /* Ou 'fixed', dependendo de sua preferência */
+    bottom: 0; /* Alinha a imagem na parte inferior */
+    left: 0; /* Alinha a imagem à esquerda */
+    transform: translateX(-10%); /* Não é necessário ajustar a posição no eixo X */
+}
