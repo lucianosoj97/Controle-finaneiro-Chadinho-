@@ -75,7 +75,7 @@ input[type="password"] {
 button[type="submit"] {
     width: 100%;
     padding: 10px;
-    background-color: #007bff; /* Cor de fundo */
+    background-color: #0056A6; /* Cor de fundo */
     color: white; /* Cor do texto */
     border: none;
     border-radius: 4px; /* Bordas arredondadas */
@@ -91,7 +91,7 @@ button[type="submit"]:hover {
     display: block;
     text-align: center;
     margin-top: 20px; /* Margem acima do link */
-    color: #007bff; /* Cor do link */
+    color: #0056A6; /* Cor do link */
     text-decoration: none; /* Removendo sublinhado */
 }
 
@@ -100,3 +100,94 @@ button[type="submit"]:hover {
     margin-bottom: 20px;
     text-align: center; /* Centraliza o texto */
 }
+
+/* Estilo do Modal (fundo) */
+.modal {
+    display: none; /* Escondido por padrão */
+    position: fixed; /* Fica fixo na tela */
+    z-index: 1; /* Fica no topo */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largura total da tela */
+    height: 100%; /* Altura total da tela */
+    overflow: auto; /* Habilita a rolagem se necessário */
+    background-color: rgba(0,0,0,0.4); /* Cor de fundo com opacidade */
+}
+
+/* Estilo do conteúdo do Modal */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% do topo e centralizado horizontalmente */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 20%; /* Ajuste para uma largura menor do conteúdo do modal */
+    /* Para telas menores, você pode querer uma largura diferente */
+    @media (max-width: 600px) {
+        width: 80%; /* Largura maior para telas menores */
+    }
+}
+
+/* Título do Modal */
+.modal-content h2 {
+    text-align: center; /* Centraliza o título */
+    margin-bottom: 20px; /* Adiciona espaço abaixo do título */
+}
+
+.modal-content input[type="email"] {
+    width: 90%; /* Ocupa toda a largura do conteúdo do modal */
+    padding: 10px; /* Ajuste conforme necessário para aumentar a altura */
+    margin-bottom: 15px; /* Espaço abaixo do input */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Botão de Enviar do Modal */
+.modal-content button {
+    width: auto; /* Ajuste conforme necessário para diminuir a largura */
+    padding: 10px 20px; /* Ajuste o padding para controlar o tamanho */
+    background-color: #0056A6;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: block; /* Faz o botão ser um bloco */
+    margin: 0 auto 15px auto; /* Centraliza o botão e adiciona espaço acima */
+}
+
+
+/* O botão de fechar (x) */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#loadingIndicator {
+    display: none; /* Inicialmente escondido */
+    position: fixed; /* Posicionamento fixo */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+    z-index: 9999; /* Garante que o indicador fique no topo */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+}
+
+#loadingIndicator img {
+    width: 100px; /* Ajuste conforme necessário */
+    height: auto;
+}
+
+

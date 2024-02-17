@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from functions.login_validation import login_validator
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from functions.login_validation import LoginValidator
 from functions.new_register import criar_registro
 from functions.list import obter_cadastros
 from functions.dashboard import get_dashboard_data
 from functions.edit import edit_person, update_person
 from functions.token import token_valido
+from functions.change_password import alterar_senha, validar_codigo, verificar_email_usuario, gerar_e_enviar_codigo
 from database.config import DatabaseConfig
 import psycopg2
 import uuid
@@ -14,32 +15,18 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = 'sua_chave_secreta'  # Chave secreta para uso de sessões
 
 @app.route('/', methods=['GET'])
-def login():
+def init():
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
-def process_login():
-    email_digitado = request.form['username']
-    senha_digitada = request.form['password']
-
-    try:
-        if login_validator.validar_credenciais(email_digitado, senha_digitada):
-            # Se as credenciais estiverem corretas, defina o usuário na sessão
-            token = str(uuid.uuid4())
-            session['token'] = token
-            session.modified = True
-            session['logged_in'] = True
-            cadastros = obter_cadastros()
-
-            return redirect(url_for('dashboard'))
-        else:
-            # Se as credenciais estiverem incorretas, renderize a página de login novamente com uma mensagem de erro
-            return render_template('login.html', error_message="E-mail ou senha incorretos.")
-
-    except Exception as e:
-        print(f"Erro ao autenticar: {e}")
-        # Se houver um erro ao autenticar, renderize a página de login novamente com uma mensagem de erro
-        return render_template('login.html', error_message="Erro ao autenticar.")
+def login():
+    username = request.form['username']
+    password = request.form['password']
+    validator = LoginValidator()  # Assumindo que você tem um construtor adequado
+    if validator.validar_credenciais(username, password):
+        return redirect(url_for('dashboard'))
+    else:
+        return render_template('login.html', error_message="E-mail ou senha incorretos.")
 
 @app.route('/dashboard')
 def dashboard():
@@ -176,7 +163,45 @@ def delete(id):
     get_dashboard_data()
     return redirect(url_for('list_people'))
 
+@app.route('/verify_email', methods=['POST'])
+def api_verify_email():
+    data = request.get_json()
+    email = data.get('email')
+    if email:
+        existe = verificar_email_usuario(email)  # Substitua pela sua função que verifica o email
+        if existe:
+            session['reset_email'] = email  # Armazena o email na sessão
+            # Aqui chamamos a função para gerar e enviar o código
+            gerar_e_enviar_codigo(email)  # Substitua pela sua função que gera e envia o código
+            return jsonify({'exists': True})
+        else:
+            return jsonify({'exists': False})
+    else:
+        return jsonify({'error': 'E-mail não fornecido'}), 400
 
+@app.route('/change_password')
+def change_password():
+    email = session.get('reset_email')
+    if email:
+        # Passa o email para o template
+        return render_template('change_password.html', reset_email=email)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/reset_password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    email = data['email']
+    resetCode = data['resetCode']
+    newPassword = data['newPassword']
+
+    if validar_codigo(email, resetCode):
+        if alterar_senha(email, newPassword):
+            return jsonify({'success': True, 'message': 'Senha alterada com sucesso!'})
+        else:
+            return jsonify({'success': False, 'message': 'Não foi possível alterar a senha.'})
+    else:
+        return jsonify({'success': False, 'message': 'Código inválido ou expirado.'})
 
 if __name__ == '__main__':
     app.run(debug=True)

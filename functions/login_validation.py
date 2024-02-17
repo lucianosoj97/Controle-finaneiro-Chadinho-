@@ -11,7 +11,7 @@ class LoginValidator:
             # Aqui você obtém a configuração do banco de dados usando a classe DatabaseConfig
             db_config = DatabaseConfig.get_db_config()
             self.conexao = psycopg2.connect(**db_config)
-            print("Conexão bem-sucedida!")
+            print("Conexão bem-sucedidaaa!")
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
@@ -112,5 +112,27 @@ class LoginValidator:
 
         except Exception as e:
             print(f"Erro ao excluir registros da tabela 'register': {e}")
+
+    def update_usuario_table(self):
+        try:
+            cursor = self.conexao.cursor()
+
+            # Renomeia a coluna 'deletiondate' para 'codigo'
+            rename_column_query = """
+                ALTER TABLE usuário RENAME COLUMN deletiondate TO codigo;
+            """
+            cursor.execute(rename_column_query)
+
+            # Altera o tipo da coluna 'codigo' para VARCHAR(6)
+            alter_column_type_query = """
+                ALTER TABLE usuário ALTER COLUMN codigo TYPE VARCHAR(6) USING codigo::VARCHAR(6);
+            """
+            cursor.execute(alter_column_type_query)
+
+            self.conexao.commit()
+            print("Coluna 'deletiondate' renomeada para 'codigo' e tipo alterado para VARCHAR(6) com sucesso na tabela 'usuário'!")
+
+        except Exception as e:
+            print(f"Erro ao renomear e alterar tipo da coluna na tabela 'usuário': {e}")
 
 login_validator = LoginValidator()
