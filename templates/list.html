@@ -8,7 +8,7 @@
 </head>
 <body>
     <nav class="navbar custom-navbar flex-column custom-bg-color">
-        <ul class="navbar-nav flex-row"> <!-- Adicionei a classe flex-row -->
+        <ul class="navbar-nav flex-row">
             <li class="nav-item">
                 <a class="nav-link" href="/dashboard">Tela Inicial</a>
             </li>
@@ -35,7 +35,6 @@
                 <th>Porcentagem Paga</th>
                 <th></th>
                 <th></th>
-
             </tr>
             {% for cadastro in people %}
             <tr>
@@ -45,12 +44,43 @@
                 <td>{{ cadastro[4] }}</td>
                 <td>{{ cadastro[5] }}</td>
                 <td>{{ cadastro[6] }}</td>
-                <td><a href="/edit/{{ cadastro[0] }}">Editar</a></td>
-                <td><a href="/delete/{{ cadastro[0] }}">Excluir</a></td>
+                <td><a href="javascript:void(0);" onclick="showDeleteModal('{{ cadastro[0] }}')">Editar</a></td>
+                <td><a href="javascript:void(0);" onclick="showDeleteModal('{{ cadastro[0] }}')">Excluir</a></td>
             </tr>
             {% endfor %}
         </table>
     </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="deleteModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>Confirmar Exclusão</h2>
+            <p>Tem certeza de que deseja excluir este cadastro?</p>
+            <div class="button-container">
+            <button id="confirmDelete" onclick="confirmDelete()">Excluir</button>
+            <button onclick="closeModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <img src="/static/image/Instagram.png" class="img-logo">
+
+    <script>
+        var currentDeleteId = null;
+
+        function showDeleteModal(cadastroId) {
+            currentDeleteId = cadastroId;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        function confirmDelete() {
+            window.location.href = `/delete/${currentDeleteId}`;
+        }
+    </script>
 </body>
 </html>

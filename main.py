@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-from functions.login_validation import LoginValidator
+from functions.login_validation import login_validator
 from functions.new_register import criar_registro
 from functions.list import obter_cadastros
 from functions.dashboard import get_dashboard_data
 from functions.edit import edit_person, update_person
 from functions.token import token_valido
-from functions.change_password import alterar_senha, validar_codigo, verificar_email_usuario, gerar_e_enviar_codigo
+from functions.change_password import alterar_senha, validar_codigo, verificar_email_usuario
 from database.config import DatabaseConfig
 import psycopg2
 import uuid
@@ -15,19 +15,27 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = 'sua_chave_secreta'  # Chave secreta para uso de sessões
 
 @app.route('/', methods=['GET'])
-def init():
+def login():
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
-def login():
-    username = request.form['username']
-    password = request.form['password']
-    validator = LoginValidator()  # Assumindo que você tem um construtor adequado
-    if validator.validar_credenciais(username, password):
-        return redirect(url_for('dashboard'))
-    else:
-        return render_template('login.html', error_message="E-mail ou senha incorretos.")
+def process_login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
 
+    if login_validator.validar_credenciais(username, password):
+        # Se as credenciais estiverem corretas
+        token = str(uuid.uuid4())
+        session['token'] = token
+        session.modified = True
+        session['logged_in'] = True
+        # Retorna uma resposta JSON indicando sucesso e a URL de redirecionamento
+        return jsonify({'success': True, 'redirectUrl': url_for('dashboard')})
+    else:
+        # Retorna uma resposta JSON indicando falha
+        return jsonify({'success': False, 'message': "E-mail ou senha incorretos."}), 401
+    
 @app.route('/dashboard')
 def dashboard():
     if 'token' not in session:
@@ -165,14 +173,13 @@ def delete(id):
 
 @app.route('/verify_email', methods=['POST'])
 def api_verify_email():
-    data = request.get_json()
+    data = request.get_json()  # Obtém os dados enviados na solicitação
     email = data.get('email')
+
     if email:
         existe = verificar_email_usuario(email)  # Substitua pela sua função que verifica o email
         if existe:
             session['reset_email'] = email  # Armazena o email na sessão
-            # Aqui chamamos a função para gerar e enviar o código
-            gerar_e_enviar_codigo(email)  # Substitua pela sua função que gera e envia o código
             return jsonify({'exists': True})
         else:
             return jsonify({'exists': False})
@@ -181,27 +188,28 @@ def api_verify_email():
 
 @app.route('/change_password')
 def change_password():
-    email = session.get('reset_email')
-    if email:
-        # Passa o email para o template
-        return render_template('change_password.html', reset_email=email)
-    else:
-        return redirect(url_for('login'))
+    return render_template('change_password.html')
 
-@app.route('/reset_password', methods=['POST'])
+@app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
-    data = request.get_json()
-    email = data['email']
-    resetCode = data['resetCode']
-    newPassword = data['newPassword']
+    # Garante que o email foi armazenado na sessão
+    email = session.get('reset_email')
+    if not email:
+        return render_template('error.html', error="Sessão expirada ou inválida.")
 
-    if validar_codigo(email, resetCode):
-        if alterar_senha(email, newPassword):
-            return jsonify({'success': True, 'message': 'Senha alterada com sucesso!'})
+    if request.method == 'POST':
+        codigo = request.form.get('codigo')
+        nova_senha = request.form.get('novaSenha')
+
+        # Aqui você chamaria suas funções para validar o código e alterar a senha
+        if validar_codigo(email, codigo) and alterar_senha(email, nova_senha):
+            session.pop('reset_email', None)  # Limpa o email da sessão após o uso
+            return redirect(url_for('login', message="Senha alterada com sucesso!"))
         else:
-            return jsonify({'success': False, 'message': 'Não foi possível alterar a senha.'})
+            return render_template('reset_password.html', error="Código inválido ou expirado ou não foi possível alterar a senha.")
     else:
-        return jsonify({'success': False, 'message': 'Código inválido ou expirado.'})
+        # Para solicitações GET, simplesmente mostra o formulário de redefinição
+        return render_template('reset_password.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

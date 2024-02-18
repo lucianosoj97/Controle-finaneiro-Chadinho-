@@ -1,6 +1,5 @@
 import psycopg2
 from database.config import DatabaseConfig
-
 class LoginValidator:
     def __init__(self):
         self.conexao = None

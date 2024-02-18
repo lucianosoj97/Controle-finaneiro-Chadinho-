@@ -13,10 +13,10 @@
             <div class="inner-container">
                 <div class="box">
                     <h1>Login</h1>
-                    <form action="/login" method="post" id="loginForm">
-                        <input type="text" placeholder="Username" name="username"/>
-                        <input type="password" placeholder="Password" name="password"/>
-                        <button type="submit">Login</button>
+                    <form id="loginForm">
+                        <input type="text" placeholder="Username" name="username" required />
+                        <input type="password" placeholder="Password" name="password" required />
+                        <button type="button" id="loginButton" class="login-btn">Login</button>
                     </form>
                     <p><a href="#" id="forgotPasswordLink" class="btn">Esqueceu sua senha?</a></p>
                     <a href="/send_whatsapp_message" class="btn">Precisa de um acesso? Cadastro</a>
@@ -44,23 +44,54 @@
     <img src="/static/image/Instagram.png" class="img-logo">
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        // Impede o envio do formulário
-        e.preventDefault();
+        document.getElementById('loginButton').addEventListener('click', function() {
+    var username = document.querySelector('input[name="username"]').value;
+    var password = document.querySelector('input[name="password"]').value;
 
-        // Exibe o indicador de carregamento
-        document.getElementById('loadingIndicator').style.display = 'flex';
+    // Exibe o indicador de carregamento
+    document.getElementById('loadingIndicator').style.display = 'flex';
 
-        // Aqui você pode fazer a chamada AJAX/Fetch se estiver fazendo o login via AJAX
-        // ou simplesmente continuar com o envio do formulário se estiver fazendo o post direto.
-
-        // Para continuar com o envio do formulário após mostrar o indicador (sem AJAX):
-        this.submit(); // 'this' refere-se ao formulário
-
-        // Se estiver usando AJAX para login, insira sua lógica de login aqui e só faça o submit ou redirecionamento baseado na resposta do AJAX.
+    fetch('/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({username: username, password: password}),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Falha na comunicação com o servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            window.location.href = data.redirectUrl; // Redireciona para a URL especificada
+            // O indicador de carregamento será ocultado pela própria ação de redirecionamento de página
+        } else {
+            // Esconde o indicador de carregamento somente se não for redirecionar
+            document.getElementById('loadingIndicator').style.display = 'none';
+            Swal.fire({
+                title: 'Erro!',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
+        }
+    })
+    .catch(error => {
+        // Esconde o indicador de carregamento em caso de erro
+        document.getElementById('loadingIndicator').style.display = 'none';
+        console.error('Erro:', error);
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Ocorreu um erro durante o login. Por favor, tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'OK'
         });
+    });
+});
+
         document.getElementById('forgotPasswordLink').addEventListener('click', function() {
             document.getElementById('resetPasswordModal').style.display = 'block';
         });
