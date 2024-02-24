@@ -83,9 +83,7 @@ class LoginValidator:
             # Adiciona as novas colunas à tabela existente
             alter_table_query = """
                 ALTER TABLE register
-                ADD COLUMN IF NOT EXISTS birth_date DATE,
-                ADD COLUMN IF NOT EXISTS lead_value NUMERIC,
-                ADD COLUMN IF NOT EXISTS owner_value NUMERIC
+                ADD COLUMN IF NOT EXISTS balance NUMERIC;
             """
             cursor.execute(alter_table_query)
             self.conexao.commit()
@@ -134,4 +132,29 @@ class LoginValidator:
         except Exception as e:
             print(f"Erro ao renomear e alterar tipo da coluna na tabela 'usuário': {e}")
 
+    def create_withdrawal_history(self):
+        try:
+            cursor = self.conexao.cursor()
+
+            create_table_query = """
+                CREATE TABLE withdrawal_history (
+                id SERIAL PRIMARY KEY,
+                register_id UUID NOT NULL,
+                initial_balance DECIMAL(10, 2) NOT NULL,
+                withdrawn_amount DECIMAL(10, 2) NOT NULL,
+                remaining_balance DECIMAL(10, 2) NOT NULL,
+                description TEXT,
+                timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_register
+                    FOREIGN KEY(register_id) 
+                    REFERENCES register(id)
+                    ON DELETE CASCADE
+            );
+            """
+            cursor.execute(create_table_query)
+            self.conexao.commit()
+            print("Tabela 'withdrawal_history' criada com sucesso!")
+
+        except Exception as e:
+            print(f"Erro ao criar a tabela 'withdrawal_history': {e}")
 login_validator = LoginValidator()

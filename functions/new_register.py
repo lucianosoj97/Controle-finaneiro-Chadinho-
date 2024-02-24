@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import flash, redirect, url_for
 
 
-def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago):
+def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago, betting_house):
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
@@ -19,13 +19,13 @@ def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentage
         cursor = conexao.cursor()
 
         inserir_registro_query = """
-            INSERT INTO register (id, name, cpf, birth_date, address, value, lead_value, owner_value, percentage, creation_date)
-            VALUES (uuid_generate_v4(), %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO register (id, name, cpf, birth_date, address, value, lead_value, owner_value, percentage, creation_date, betting_house)
+            VALUES (uuid_generate_v4(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s )
         """
 
-        cursor.execute(inserir_registro_query, (nome, cpf, birth_date, endereco, valor_depositado_formatado, valor_descontado, valor_total, porcentagem_pago_formatada, current_date))
+        cursor.execute(inserir_registro_query, (nome, cpf, birth_date, endereco, valor_depositado_formatado, valor_descontado, valor_total, porcentagem_pago_formatada, current_date, betting_house))
         conexao.commit()
-        cursor.close() 
+        cursor.close()
         conexao.close()
 
         flash("Registro criado com sucesso!", "success")

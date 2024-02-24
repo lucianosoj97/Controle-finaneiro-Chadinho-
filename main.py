@@ -6,10 +6,10 @@ from functions.dashboard import get_dashboard_data
 from functions.edit import edit_person, update_person
 from functions.token import token_valido
 from functions.change_password import alterar_senha, validar_codigo, verificar_email_usuario
+from functions.withdeawal_list import gerenciamento_de_contas
 from database.config import DatabaseConfig
 import psycopg2
 import uuid
-from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'sua_chave_secreta'  # Chave secreta para uso de sessões
@@ -70,9 +70,11 @@ def register():
         endereco = request.form['address']
         valor_depositado = request.form['deposit_amount']
         porcentagem_pago = request.form['payment_percentage']
+        betting_house = request.form['betting_house']
+
 
         # Chame a função criar_registro com os dados do formulário
-        criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago)
+        criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago, betting_house)
 
         return redirect('/dashboard')  # Redirecione para a página inicial após a criação do registro
 
@@ -154,14 +156,12 @@ def send_whatsapp_message():
 
 @app.route('/delete/<uuid:id>', methods=['GET'])
 def delete(id):
-    deletion_date = datetime.now()
     db_config = DatabaseConfig.get_db_config()
     conexao = psycopg2.connect(**db_config)
     cursor = conexao.cursor()
 
-    # SQL para atualizar a coluna deletiondate
-    sql_update_query = """ UPDATE register SET deletion_date = %s WHERE id = %s """
-    cursor.execute(sql_update_query, (deletion_date, str(id)))
+    sql_delete_query = """ DELETE FROM register WHERE id = %s """
+    cursor.execute(sql_delete_query, (str(id),))
 
     conexao.commit()  # Confirmar a transação
     cursor.close()
@@ -210,6 +210,35 @@ def reset_password():
     else:
         # Para solicitações GET, simplesmente mostra o formulário de redefinição
         return render_template('reset_password.html')
+
+@app.route('/account_management')
+def account_management():
+    if 'token' not in session or not token_valido(session['token']):
+        return redirect(url_for('login'))
+
+    raw_accounts = gerenciamento_de_contas()  # Esta função retorna os dados necessários
+    print('Raw accounts data:', raw_accounts)
+
+    # Lista para armazenar os cadastros ajustados
+    adjusted_accounts = []
+
+    for account in raw_accounts:
+        # Extrai os dados de cada conta
+        account_id, name, betting_house, lead_value = account
+
+        lead_value = float(lead_value)
+        
+        # Adiciona o cadastro ajustado à lista, usando um dicionário para facilitar o acesso no template
+        adjusted_accounts.append({
+            'id': account_id,
+            'name': name,
+            'betting_house': betting_house if betting_house else 'N/A',  # Trata o caso de betting_house ser None
+            'saldo': f'R$ {lead_value:,.2f}'.replace('.', 'v').replace(',', '.').replace('v', ',')
+        })
+
+    # Passa a lista de cadastros ajustados para o template
+    return render_template('withdrawal_history.html', accounts=adjusted_accounts)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

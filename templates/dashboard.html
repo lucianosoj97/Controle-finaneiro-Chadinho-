@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/loading.css">
+
     <!-- Adicione o link para o arquivo CSS do Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Adicione o link para o arquivo JS do Bootstrap (opcional, mas recomendado) -->
@@ -11,6 +14,9 @@
     <title>Dashboard</title>
 </head>
 <body>
+    <div id="loadingIndicator" style="display: none;">
+        <img src="/static/gif/loading.gif" alt="Carregando..." />
+    </div>
     <nav class="navbar custom-navbar flex-column custom-bg-color">
         <ul class="navbar-nav flex-row"> <!-- Adicionei a classe flex-row -->
             <li class="nav-item">
@@ -21,6 +27,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/account_management">Gerenciar Contas</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/">Sair</a>
@@ -35,6 +44,18 @@
             <p><strong>Valor total limpo:</strong> R$ {{ valor_limpo }}</p>
         </div>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('a[href="/dashboard"]').click(function() {
+                $('#loadingIndicator').show(); // Atualizado para o novo ID
+            });
+
+            // Se quiser aplicar a todos os links da navegação
+            $('nav a').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+        });
+    </script>
     <!-- Posicionando a imagem no final do body para que fique no rodapé -->
     <img src="/static/image/Instagram.png" class="img-logo">
 </body>

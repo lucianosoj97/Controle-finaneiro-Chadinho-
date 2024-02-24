@@ -5,7 +5,7 @@ import logging
 # Configurando o registro
 logging.basicConfig(level=logging.DEBUG)
 
-def obter_cadastros():
+def gerenciamento_de_contas():
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
@@ -13,15 +13,18 @@ def obter_cadastros():
 
         # Consulta SQL para recuperar os cadastros com deletion_date vazio
         consulta_sql = """
-            SELECT id, name, cpf,birth_date , address, value, percentage, betting_house
-            FROM register
-            WHERE deletion_date IS NULL
+            SELECT id,
+            name,
+            betting_house,
+            lead_value
+        FROM register;
         """
 
         cursor.execute(consulta_sql)
         cadastros = cursor.fetchall()  # Obtém todos os registros
         cursor.close()
         conexao.close()
+        print('cadastros', cadastros)
         return cadastros
 
     except Exception as e:

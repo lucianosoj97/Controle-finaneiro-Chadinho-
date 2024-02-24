@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Contas</title>
+    <link rel="stylesheet" href="/static/css/list.css">
+    <link rel="stylesheet" href="/static/css/loading.css">
+</head>
+<body>
+    <div id="loadingIndicator" style="display: none;">
+        <img src="/static/gif/loading.gif" alt="Carregando..." />
+    </div>
+    <nav class="navbar custom-navbar flex-column custom-bg-color">
+        <ul class="navbar-nav flex-row">
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard">Tela Inicial</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">Novo Cadastro</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/account_management">Gerenciar Contas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/">Sair</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="container">
+        <h1>Gerenciamento de Contas</h1>
+        <table>
+            <tr>
+                <th>Nome</th>
+                <th>Casa de Aposta</th>
+                <th>Saldo</th>
+                <th>Ações</th>
+            </tr>
+            {% for account in accounts %}
+            <tr>
+                <td>{{ account.name }}</td>
+                <td>{{ account.betting_house }}</td>
+                <td>{{ account.saldo }}</td>
+                <td>
+                    <button onclick="showDepositModal('{{ account.id }}')">Historico</button>
+                    <button onclick="showWithdrawModal('{{ account.id }}')">Sacar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Modal de Depósito -->
+    <div id="depositModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('depositModal')">&times;</span>
+            <h2>Registrar Depósito</h2>
+            <form action="/deposit" method="POST">
+                <input type="hidden" name="account_id" id="depositAccountId">
+                <label for="depositAmount">Valor do Depósito:</label>
+                <input type="number" id="depositAmount" name="deposit_amount" required>
+                <div class="button-container">
+                    <button type="submit">Depositar</button>
+                    <button type="button" onclick="closeModal('depositModal')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Saque -->
+    <div id="withdrawModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('withdrawModal')">&times;</span>
+            <h2>Registrar Saque</h2>
+            <form action="/withdraw" method="POST">
+                <input type="hidden" name="account_id" id="withdrawAccountId">
+                <label for="withdrawAmount">Valor do Saque:</label>
+                <input type="number" id="withdrawAmount" name="withdraw_amount" required>
+                <div class="button-container">
+                    <button type="submit">Sacar</button>
+                    <button type="button" onclick="closeModal('withdrawModal')">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('a[href="/dashboard"]').click(function() {
+                $('#loadingIndicator').show(); // Atualizado para o novo ID
+            });
+
+            // Se quiser aplicar a todos os links da navegação
+            $('nav a').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+        });
+        function showDepositModal(accountId) {
+            document.getElementById('depositAccountId').value = accountId;
+            document.getElementById('depositModal').style.display = 'block';
+        }
+
+        function showWithdrawModal(accountId) {
+            document.getElementById('withdrawAccountId').value = accountId;
+            document.getElementById('withdrawModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+    </script>
+    <img src="/static/image/Instagram.png" class="img-logo">
+</body>
+</html>
