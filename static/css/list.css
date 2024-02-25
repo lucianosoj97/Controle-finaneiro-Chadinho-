@@ -16,6 +16,29 @@ body {
     overflow-x: auto;
 }
 
+/* Estilo para o botão Editar */
+.btn-editar {
+    color: #ffffff; /* Cor do texto */
+    background-color: #4CAF50; /* Cor de fundo */
+    padding: 5px 10px; /* Espaçamento interno */
+    text-decoration: none; /* Remove o sublinhado do link */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+/* Estilo para o botão Excluir */
+.btn-excluir {
+    color: #ffffff; /* Cor do texto */
+    background-color: #f44336; /* Cor de fundo */
+    padding: 5px 10px; /* Espaçamento interno */
+    text-decoration: none; /* Remove o sublinhado do link */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+/* Estilos para hover (quando o mouse está sobre os botões) */
+.btn-editar:hover, .btn-excluir:hover {
+    opacity: 0.8; /* Efeito de transparência para o hover */
+}
+
 h1 {
     color: #000000;
     text-align: center;
@@ -162,7 +185,52 @@ a:hover {
 
 .button-container {
     display: flex;
-    justify-content: center; /* Centraliza os botões horizontalmente */
-    align-items: center;
-    gap: 20px; /* Espaçamento entre os botões */
+    justify-content: left; /* Centraliza os botões horizontalmente */
+    align-items: left;
+    padding: 20px;
+    gap: 30px; /* Espaçamento entre os botões */
+}
+
+/* Estilos para o botão de histórico */
+.btn-historico {
+    background-color: #ffbb2f; /* Verde */
+    color: white;
+    padding: 5px 15px;
+    margin: px 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-historico:hover {
+    background-color: #e69a00;
+}
+
+/* Estilos para o botão de sacar */
+.btn-sacar {
+    background-color: #4CAF50; /* Vermelho */
+    color: white;
+    padding: 5px 15px;
+    margin: 4px 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-sacar:hover {
+    background-color: #45a049;
+}
+
+.search-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#searchInput {
+    padding: 10px;
+    width: 50%;
+    max-width: 300px; /* Ajuste conforme necessário */
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }

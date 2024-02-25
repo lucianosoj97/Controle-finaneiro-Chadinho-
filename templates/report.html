@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/report.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Configuração de Relatório</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Seu código de navegação aqui -->
+    </nav>
+                    <!-- HTML -->
+            <div class="container mt-4">
+                <h1>Configuração de Relatório</h1>
+                <div class="box">
+                    <form action="/gerar-relatorio" method="POST">
+                        <div class="form-row">
+                            <div class="form-group date-field">
+                                <label for="dataInicio">Data de Início:</label>
+                                <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
+                            </div>
+                            <div class="form-group date-field">
+                                <label for="dataFim">Data de Fim:</label>
+                                <input type="date" class="form-control" id="dataFim" name="dataFim" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="casaDeAposta">Casa de Aposta:</label>
+                            <select class="form-control" id="casaDeAposta" name="casaDeAposta">
+                                <!-- Opções aqui -->
+                            </select>
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="relatorioGeral" name="relatorioGeral">
+                            <label class="form-check-label" for="relatorioGeral">Relatório Geral</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Gerar Relatório</button>
+                    </form>
+                </div>
+            </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

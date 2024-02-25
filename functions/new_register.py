@@ -9,21 +9,33 @@ def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentage
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
-        valor_depositado_formatado = Decimal(valor_depositado.replace('R$', '').replace('.', '').replace(',', ''))
+        cursor = conexao.cursor()
+
+        valor_depositado_formatado = Decimal(valor_depositado.replace('R$', '').replace('.', '').replace(',', '.'))
         porcentagem_pago_formatada = Decimal(porcentagem_pago.replace('%', ''))
         current_date = datetime.now().strftime('%Y-%m-%d')
 
         valor_total, valor_descontado = calcular_valor_descontado(valor_depositado_formatado, porcentagem_pago_formatada)
+        description = 'Valor inicial depositado'
 
-
-        cursor = conexao.cursor()
-
+        # Modificado para retornar o id gerado
         inserir_registro_query = """
-            INSERT INTO register (id, name, cpf, birth_date, address, value, lead_value, owner_value, percentage, creation_date, betting_house)
-            VALUES (uuid_generate_v4(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s )
+            INSERT INTO register (name, cpf, birth_date, address, value, lead_value, owner_value, percentage, creation_date, betting_house)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id;
         """
 
+        # Executa a inserção e recupera o id gerado
         cursor.execute(inserir_registro_query, (nome, cpf, birth_date, endereco, valor_depositado_formatado, valor_descontado, valor_total, porcentagem_pago_formatada, current_date, betting_house))
+        register_id = cursor.fetchone()[0]  # Recupera o id gerado
+
+        # Inserir na tabela withdrawal_history
+        inserir_withdrawal_history_query = """
+            INSERT INTO withdrawal_history (register_id, withdrawn_amount, initial_balance, remaining_balance, description)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(inserir_withdrawal_history_query, (register_id, 0, valor_total, valor_total, description))
+
         conexao.commit()
         cursor.close()
         conexao.close()

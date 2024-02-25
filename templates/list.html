@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Cadastros</title>
+
     <link rel="stylesheet" href="/static/css/list.css">
     <link rel="stylesheet" href="/static/css/loading.css">
-
 </head>
 <body>
     <div id="loadingIndicator" style="display: none;">
@@ -34,6 +34,10 @@
     </nav>
     <div class="container">
         <h1>Lista de Cadastros</h1>
+        <div class="search-container">
+            <label for="searchInput">Pesquisar:</label>
+            <input type="text" id="searchInput" placeholder="Nome ou Casa de Aposta">
+        </div>
         <table>
             <tr>
                 <th>Nome Completo</th>
@@ -55,8 +59,8 @@
                 <td>{{ cadastro[5] }}</td>
                 <td>{{ cadastro[6] }}</td>
                 <td>{{ cadastro[7] }}</td>
-                <td><a href="/edit/{{ cadastro[0] }}">Editar</a></td>
-                <td><a href="javascript:void(0);" onclick="showDeleteModal('{{ cadastro[0] }}')">Excluir</a></td>
+                <td><a href="/edit/{{ cadastro[0] }}" class="btn-editar">Editar</a></td>
+                <td><a href="javascript:void(0);" onclick="showDeleteModal('{{ cadastro[0] }}')" class="btn-excluir">Excluir</a></td>
             </tr>
             {% endfor %}
         </table>

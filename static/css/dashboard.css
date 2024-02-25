@@ -117,3 +117,43 @@ input[type="submit"]:hover {
     left: 0; /* Alinha a imagem à esquerda */
     transform: translateX(-10%); /* Não é necessário ajustar a posição no eixo X */
 }
+
+
+/*--------------------------------------------------------------*/
+/* Estilos para o modal */
+#reportModal .modal-dialog {
+    margin-top: 100px; /* Aumenta o espaço no topo do modal */
+}
+
+/* Estilos adicionais para o modal */
+#reportModal .modal-content {
+    border-radius: 8px; /* Bordas arredondadas para o modal */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Sombra para o modal */
+}
+
+/* Estilos para o cabeçalho do modal */
+#reportModal .modal-header {
+    background-color: #f8f9fa; /* Cor de fundo para o cabeçalho do modal */
+    border-bottom: 1px solid #e9ecef; /* Borda inferior para o cabeçalho do modal */
+}
+
+/* Estilos para o título do modal */
+#reportModal .modal-title {
+    color: #495057; /* Cor do texto para o título do modal */
+}
+
+/* Estilos para o corpo do modal */
+#reportModal .modal-body {
+    padding: 20px; /* Preenchimento interno para o corpo do modal */
+}
+
+/* Estilos para o rodapé do modal */
+#reportModal .modal-footer {
+    border-top: 1px solid #e9ecef; /* Borda superior para o rodapé do modal */
+    background-color: #f8f9fa; /* Cor de fundo para o rodapé do modal */
+}
+
+/* Estilos para os botões do modal */
+#reportModal .btn {
+    border-radius: 4px; /* Bordas arredondadas para os botões */
+}

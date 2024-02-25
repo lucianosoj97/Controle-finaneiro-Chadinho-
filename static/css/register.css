@@ -117,3 +117,24 @@ input[type="submit"]:hover {
     left: 0; /* Alinha a imagem à esquerda */
     transform: translateX(-10%); /* Não é necessário ajustar a posição no eixo X */
 }
+
+/* Aumenta a especificidade e adiciona !important para garantir a sobreposição dos estilos padrões do Select2 */
+.select2-container--default .select2-selection--single {
+    height: 38px !important; /* Altura para combinar com seus inputs */
+    padding: 6px !important; /* Espaçamento interno para alinhar o texto */
+    border: 1px solid #ccc !important; /* Borda para combinar com seus inputs */
+    border-radius: 4px !important; /* Raio da borda para combinar com seus inputs */
+    background-color: white !important; /* Fundo branco para o campo */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 26px !important; /* Altura da linha para alinhar o texto verticalmente */
+    padding-left: 30px !important; /* Espaçamento interno à esquerda */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px !important; /* Altura da seta para alinhar com a altura do select */
+    top: 50% !important;
+    transform: translateY(-50%) !important; /* Centraliza a seta verticalmente */
+    right: 5px !important; /* Distância da seta da borda direita */
+}

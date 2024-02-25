@@ -2,13 +2,18 @@
 <html lang="en">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Contas</title>
     <link rel="stylesheet" href="/static/css/list.css">
     <link rel="stylesheet" href="/static/css/loading.css">
+    <link rel="stylesheet" href="/static/css/history_modal.css">
+
 </head>
 <body>
+    <div id="blurOverlay" class="blur-overlay"></div>
     <div id="loadingIndicator" style="display: none;">
         <img src="/static/gif/loading.gif" alt="Carregando..." />
     </div>
@@ -33,6 +38,10 @@
     </nav>
     <div class="container">
         <h1>Gerenciamento de Contas</h1>
+        <div class="search-container">
+            <label for="searchInput">Pesquisar:</label>
+            <input type="text" id="searchInput" placeholder="Digite sua busca">
+        </div>
         <table>
             <tr>
                 <th>Nome</th>
@@ -46,28 +55,32 @@
                 <td>{{ account.betting_house }}</td>
                 <td>{{ account.saldo }}</td>
                 <td>
-                    <button onclick="showDepositModal('{{ account.id }}')">Historico</button>
-                    <button onclick="showWithdrawModal('{{ account.id }}')">Sacar</button>
+                    <button class="btn-historico" id="btn-historico" data-account-id="{{ account.id }}" onclick="showHistoricoModal(this)">Histórico</button>
+                    <button class="btn-sacar" onclick="showWithdrawModal('{{ account.id }}')">Sacar</button>
                 </td>
             </tr>
             {% endfor %}
         </table>
     </div>
 
-    <!-- Modal de Depósito -->
-    <div id="depositModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal('depositModal')">&times;</span>
-            <h2>Registrar Depósito</h2>
-            <form action="/deposit" method="POST">
-                <input type="hidden" name="account_id" id="depositAccountId">
-                <label for="depositAmount">Valor do Depósito:</label>
-                <input type="number" id="depositAmount" name="deposit_amount" required>
-                <div class="button-container">
-                    <button type="submit">Depositar</button>
-                    <button type="button" onclick="closeModal('depositModal')">Cancelar</button>
-                </div>
-            </form>
+    <!-- Modal de Historico -->
+    <div id="historicoModal" class="historico-modal-style" style="display:none;">
+        <div class="custom-modal-content">
+            <span class="close-button" onclick="closeModal('historicoModal')">&times;</span>
+            <h2>Histórico de Saques</h2>
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Data do saque</th>
+                        <th>Valor sacado</th>
+                        <th>Saldo antes do saque</th>
+                        <th>Saldo Atual</th>
+                    </tr>
+                </thead>
+                <tbody id="historicoTableBody">
+                    <!-- O conteúdo da tabela será inserido aqui pelo JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -76,19 +89,25 @@
         <div class="modal-content">
             <span class="close-button" onclick="closeModal('withdrawModal')">&times;</span>
             <h2>Registrar Saque</h2>
-            <form action="/withdraw" method="POST">
-                <input type="hidden" name="account_id" id="withdrawAccountId">
+            <!-- Atualize o valor do atributo action para '/realizar-saque' -->
+            <form action="/realizar-saque" method="POST">
+                <!-- Certifique-se de que o nome do campo oculto é 'register_id', conforme esperado pela rota -->
+                <input type="hidden" name="register_id" id="withdrawAccountId">
                 <label for="withdrawAmount">Valor do Saque:</label>
-                <input type="number" id="withdrawAmount" name="withdraw_amount" required>
+                <!-- Certifique-se de que o nome do campo de quantidade de saque é 'saque_amount', conforme esperado pela rota -->
+                <input type="text" id="withdrawAmount" name="saque_amount" required>
                 <div class="button-container">
-                    <button type="submit">Sacar</button>
+                    <button type="submit" id="btn-saque">Sacar</button>
                     <button type="button" onclick="closeModal('withdrawModal')">Cancelar</button>
-                </div>
-            </form>
+                </form>
         </div>
     </div>
 
     <script>
+        $(document).ready(function(){
+            $('#withdrawAmount').mask('R$ #.##0,00', {reverse: true});
+        });
+
         $(document).ready(function() {
             $('a[href="/dashboard"]').click(function() {
                 $('#loadingIndicator').show(); // Atualizado para o novo ID
@@ -96,6 +115,12 @@
 
             // Se quiser aplicar a todos os links da navegação
             $('nav a').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+            $('#btn-saque').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+            $('#btn-historico').click(function() {
                 $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
             });
         });
@@ -109,9 +134,57 @@
             document.getElementById('withdrawModal').style.display = 'block';
         }
 
+        function showHistoricoModal(buttonElement) {
+            var accountId = buttonElement.getAttribute('data-account-id');
+            document.getElementById('historicoModal').style.display = 'block';
+            document.getElementById('blurOverlay').style.display = 'block'; // Mostra o overlay de desfoque
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            // Realiza a solicitação AJAX para buscar o histórico de saques
+            fetch('/get-withdraw-history?account_id=' + accountId)
+            .then(response => response.json())
+            .then(data => {
+                // Aqui você processa os dados recebidos e atualiza o modal com as informações do histórico
+                // Por exemplo, você pode iterar sobre 'data' que é uma lista de históricos e adicionar à tabela no modal
+                var historicoHtml = '';
+                data.forEach(historico => {
+                    historicoHtml += '<tr>' +
+                                    '<td>' + historico.data + '</td>' +
+                                    '<td>' + historico.valor_sacado + '</td>' +
+                                    '<td>' + historico.saldo_anterior + '</td>' +
+                                    '<td>' + historico.saldo_atual + '</td>' +
+                                    '</tr>';
+                });
+                // Atualize o corpo da tabela no seu modal com o novo HTML
+                document.getElementById('historicoTableBody').innerHTML = historicoHtml;
+                // Oculta o GIF de carregamento após o carregamento dos dados
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.querySelector('.modal-backdrop').style.display = 'block'; // Mostra o fundo desfocado
+
+            })
+            .catch(error => {
+                console.error('Erro ao buscar histórico:', error);
+                // Em caso de erro, você também deve ocultar o GIF de carregamento
+                document.getElementById('loadingIndicator').style.display = 'none';
+            });
+        }
+
         function closeModal(modalId) {
             document.getElementById(modalId).style.display = 'none';
+            document.getElementById('blurOverlay').style.display = 'none'; // Oculta o overlay de desfoque
+
         }
+
+        $(document).ready(function() {
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                // Assume que sua tabela tem um ID ou classe específica, aqui estou usando 'table' como seletor genérico
+                // Use 'table tr.slice(1)' para começar a filtrar a partir da segunda linha, ignorando a primeira (cabeçalho)
+                $("table tr").slice(1).filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
     </script>
     <img src="/static/image/Instagram.png" class="img-logo">
 </body>

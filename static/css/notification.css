@@ -1,0 +1,34 @@
+/* Estilo para notificações de sucesso */
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+/* Estilo para notificações de erro */
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+/* Estilo para a notificação em si (aplicável a ambas) */
+.alert {
+    position: fixed;
+    top: -280px; /* Ajuste para o topo da tela */
+    left: 50%; /* Centraliza no eixo X */
+    transform: translateX(-50%); /* Ajusta a centralização considerando a largura do elemento */
+    z-index: 9999; /* Para garantir que apareça acima de outros elementos */
+    display: none;
+    width: auto; /* Permite que a largura se ajuste ao conteúdo */
+    max-width: 600px; /* Ou o tamanho máximo que você desejar */
+    text-align: center; /* Alinha o texto ao centro */
+}

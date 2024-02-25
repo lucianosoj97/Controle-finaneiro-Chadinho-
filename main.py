@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, send_file
 from functions.login_validation import login_validator
 from functions.new_register import criar_registro
 from functions.list import obter_cadastros
@@ -7,9 +7,13 @@ from functions.edit import edit_person, update_person
 from functions.token import token_valido
 from functions.change_password import alterar_senha, validar_codigo, verificar_email_usuario
 from functions.withdeawal_list import gerenciamento_de_contas
+from functions.saque import realizar_saque
+from functions.history_saque import buscar_historico_saques
+from functions.report import tabela_para_excel
 from database.config import DatabaseConfig
 import psycopg2
 import uuid
+import os
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'sua_chave_secreta'  # Chave secreta para uso de sessões
@@ -95,6 +99,8 @@ def list_people():
     formatted_cadastros = []
     for cadastro in cadastros:
         formatted_cadastro = list(cadastro)
+
+        formatted_cadastro[3] = cadastro[3].strftime("%d/%m/%Y")
         try:
             # Convertendo a string para float antes de formatar
             valor_float = float(formatted_cadastro[5])
@@ -224,21 +230,66 @@ def account_management():
 
     for account in raw_accounts:
         # Extrai os dados de cada conta
-        account_id, name, betting_house, lead_value = account
+        account_id, name, betting_house, owner_value = account
 
-        lead_value = float(lead_value)
-        
+        owner_value = float(owner_value)
+
         # Adiciona o cadastro ajustado à lista, usando um dicionário para facilitar o acesso no template
         adjusted_accounts.append({
             'id': account_id,
             'name': name,
             'betting_house': betting_house if betting_house else 'N/A',  # Trata o caso de betting_house ser None
-            'saldo': f'R$ {lead_value:,.2f}'.replace('.', 'v').replace(',', '.').replace('v', ',')
+            'saldo': f'R$ {owner_value:,.2f}'.replace('.', 'v').replace(',', '.').replace('v', ',')
         })
 
     # Passa a lista de cadastros ajustados para o template
     return render_template('withdrawal_history.html', accounts=adjusted_accounts)
 
+@app.route('/realizar-saque', methods=['POST'])
+def saque():
+    register_id = request.form['register_id']
+    saque_amount_str = request.form['saque_amount']
+    saque_amount_str = saque_amount_str.replace(".", "")
+    saque_amount_str = saque_amount_str.replace(",", ".")
 
+    saque_amount = float(saque_amount_str)
+    try:
+        realizar_saque(register_id, saque_amount)
+        flash("Saque realizado com sucesso.", "success")
+    except Exception as e:
+        flash(str(e), "error")
+    
+    return redirect(url_for('account_management'))
+
+@app.route('/get-withdraw-history', methods=['GET'])
+def get_withdraw_history():
+    account_id = request.args.get('account_id')
+    historico = buscar_historico_saques(account_id)
+    return jsonify(historico)
+
+@app.route('/generate_report', methods=['POST'])
+def gerar_relatorio():
+    # Obtém o nome do relatório a partir dos dados do formulário
+    nome_relatorio = request.form.get('reportName')
+    nome_arquivo = f"{nome_relatorio}.xlsx"
+
+    # Caminho para a pasta de Downloads no Windows
+    caminho_downloads = os.path.join(os.getenv('USERPROFILE'), 'Downloads')
+    nome_arquivo_completo = os.path.join(caminho_downloads, nome_arquivo)
+
+    # Chama a função para gerar o relatório, passando o nome do arquivo como argumento
+    tabela_para_excel(nome_arquivo_completo)
+
+    # Tenta enviar o arquivo gerado para download
+    try:
+        return send_file(nome_arquivo_completo, as_attachment=True)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/report')
+def configuracao_relatorio():
+    # Por exemplo, buscar uma lista de casas de aposta do banco de dados para preencher o dropdown.
+
+    return render_template('report.html')
 if __name__ == '__main__':
     app.run(debug=True)

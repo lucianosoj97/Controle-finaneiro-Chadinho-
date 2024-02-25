@@ -1,14 +1,24 @@
 import psycopg2
+from database.config import DatabaseConfig
 
 def realizar_saque(register_id, saque_amount):
     try:
         # Conexão com o banco de dados
-        conexao = psycopg2.connect(user="seu_usuario", password="sua_senha", host="127.0.0.1", port="5432", database="seu_banco")
+        db_config = DatabaseConfig.get_db_config()
+        conexao = psycopg2.connect(**db_config)
         cursor = conexao.cursor()
         
-        # Buscar saldo atual (lead_value) baseado no register_id
-        cursor.execute("SELECT lead_value FROM register WHERE id = %s", (register_id,))
+        # Buscar saldo atual (register_id) baseado no register_id
+        cursor.execute("""
+            SELECT remaining_balance 
+            FROM withdrawal_history 
+            WHERE register_id = %s 
+            ORDER BY timestamp DESC 
+            LIMIT 1
+        """, (register_id,))
         saldo_atual = cursor.fetchone()[0]
+
+        saldo_atual = float(saldo_atual)
 
         # Calcular o novo saldo após o saque
         novo_saldo = saldo_atual - saque_amount
@@ -17,13 +27,13 @@ def realizar_saque(register_id, saque_amount):
             print("Saldo insuficiente para saque.")
             return
 
-        # Atualizar o saldo na tabela register
-        cursor.execute("UPDATE register SET lead_value = %s WHERE id = %s", (novo_saldo, register_id))
-
         # Inserir o registro de saque na tabela withdrawal_history
-        cursor.execute("INSERT INTO withdrawal_history (register_id, withdrawn_amount, remaining_balance) VALUES (%s, %s, %s)",
-                       (register_id, saque_amount, novo_saldo))
-        
+        cursor.execute("""
+            INSERT INTO withdrawal_history
+            (register_id, withdrawn_amount, initial_balance, remaining_balance)
+            VALUES (%s, %s, %s, %s)
+            """, (register_id, saque_amount, saldo_atual, novo_saldo))
+
         conexao.commit()  # Confirmar as operações
         print("Saque realizado com sucesso.")
 

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/dashboard.css">
     <link rel="stylesheet" href="/static/css/loading.css">
-
+    <link rel="stylesheet" href="/static/css/notification.css">
     <!-- Adicione o link para o arquivo CSS do Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Adicione o link para o arquivo JS do Bootstrap (opcional, mas recomendado) -->
@@ -25,17 +25,42 @@
             <li class="nav-item">
                 <a class="nav-link" href="/register">Novo cadastro</a>
             </li>
-            <li class="nav-item">
+            <li class=" ">
                 <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" href="/account_management">Gerenciar Contas</a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="/report" data-toggle="modal" data-target="#reportModal">Relatório</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="/">Sair</a>
             </li>
         </ul>
     </nav>
+    <!-- Modal para nome do relatório -->
+    <div class="modal" id="reportModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nome do Relatório</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportNameForm">
+                        <div class="form-group">
+                            <label for="reportName">Informe o nome do relatório:</label>
+                            <input type="text" class="form-control" id="reportName" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Confirmar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container"> <!-- Adicionei uma classe para identificar o conteúdo do dashboard -->
         <div class="box">
             <h1>Resumo de Informações Mensais</h1>
@@ -44,15 +69,52 @@
             <p><strong>Valor total limpo:</strong> R$ {{ valor_limpo }}</p>
         </div>
     </div>
+    <div id="notification" style="display: none;" class="alert"></div>
     <script>
-        $(document).ready(function() {
-            $('a[href="/dashboard"]').click(function() {
-                $('#loadingIndicator').show(); // Atualizado para o novo ID
-            });
+            function showNotification(message, type) {
+                var notification = $('#notification');
+                notification.removeClass('alert-success alert-danger');
+                notification.addClass(type).text(message).show();
 
-            // Se quiser aplicar a todos os links da navegação
+                // Defina o tempo para a notificação desaparecer após 5 segundos (5000 milissegundos)
+                setTimeout(function() {
+                    notification.fadeOut();
+                }, 5000);
+            }
+
+            $(document).ready(function() {
+                $('#reportNameForm').submit(function(event) {
+                    event.preventDefault();
+                    var reportName = $('#reportName').val();
+                    // Mostra o GIF de carregamento
+                    $('#loadingIndicator').show();
+
+                    $.ajax({
+                        url: '/generate_report',
+                        type: 'POST',
+                        data: { reportName: reportName },
+                        success: function(response) {
+                            // Esconde o GIF de carregamento
+                            $('#loadingIndicator').hide();
+                            // Notifica o usuário sobre o sucesso
+                            showNotification('Relatório emitido com sucesso.', 'alert-success');
+                            // Fechar o modal após a resposta do servidor
+                            $('#reportModal').modal('hide');
+                            // Aqui você pode redirecionar o usuário ou fazer download do arquivo, se necessário
+                        },
+                        error: function(xhr, status, error) {
+                            // Esconde o GIF de carregamento
+                            $('#loadingIndicator').hide();
+                            // Notifica o usuário sobre o erro
+                            showNotification('Erro ao emitir o relatório: ' + error, 'alert-danger');
+                        }
+                    });
+                });
             $('nav a').click(function() {
-                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+                // Verifica se o atributo href do link clicado é diferente de '/report'
+                if ($(this).attr('href') !== '/report') {
+                    $('#loadingIndicator').show(); // Mostra o GIF de carregamento
+                }
             });
         });
     </script>

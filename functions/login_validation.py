@@ -11,6 +11,7 @@ class LoginValidator:
             db_config = DatabaseConfig.get_db_config()
             self.conexao = psycopg2.connect(**db_config)
             print("Conexão bem-sucedidaaa!")
+
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
@@ -136,25 +137,60 @@ class LoginValidator:
         try:
             cursor = self.conexao.cursor()
 
-            create_table_query = """
-                CREATE TABLE withdrawal_history (
-                id SERIAL PRIMARY KEY,
-                register_id UUID NOT NULL,
-                initial_balance DECIMAL(10, 2) NOT NULL,
-                withdrawn_amount DECIMAL(10, 2) NOT NULL,
-                remaining_balance DECIMAL(10, 2) NOT NULL,
-                description TEXT,
-                timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                CONSTRAINT fk_register
-                    FOREIGN KEY(register_id) 
-                    REFERENCES register(id)
-                    ON DELETE CASCADE
-            );
-            """
-            cursor.execute(create_table_query)
+            # Verificar se a tabela já existe
+            cursor.execute("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_name = 'withdrawal_history'
+                );
+            """)
+            table_exists = cursor.fetchone()[0]
+
+            if not table_exists:
+                # Criar tabela se ela não existir
+                create_table_query = """
+                    CREATE TABLE withdrawal_history (
+                        id SERIAL PRIMARY KEY,
+                        register_id UUID NOT NULL,
+                        initial_balance DECIMAL(10, 2) NOT NULL,
+                        withdrawn_amount DECIMAL(10, 2) NOT NULL,
+                        remaining_balance DECIMAL(10, 2) NOT NULL,
+                        description TEXT,
+                        timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        CONSTRAINT fk_register
+                            FOREIGN KEY(register_id) 
+                            REFERENCES register(id)
+                            ON DELETE CASCADE
+                    );
+                """
+                cursor.execute(create_table_query)
+                print("Tabela 'withdrawal_history' criada com sucesso!")
+            else:
+                # Adicionar colunas ausentes
+                columns_to_check = [
+                    ('initial_balance', 'DECIMAL(10, 2)'),
+                    ('withdrawn_amount', 'DECIMAL(10, 2)'),
+                    ('remaining_balance', 'DECIMAL(10, 2)'),
+                    ('description', 'TEXT'),
+                    ('timestamp', 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP'),
+                ]
+
+                for column_name, column_type in columns_to_check:
+                    cursor.execute(f"""
+                        SELECT column_name
+                        FROM information_schema.columns
+                        WHERE table_name='withdrawal_history' AND column_name='{column_name}';
+                    """)
+                    if not cursor.fetchone():
+                        cursor.execute(f"ALTER TABLE withdrawal_history ADD COLUMN {column_name} {column_type};")
+                        print(f"Coluna '{column_name}' adicionada à tabela 'withdrawal_history'.")
+
             self.conexao.commit()
-            print("Tabela 'withdrawal_history' criada com sucesso!")
 
         except Exception as e:
             print(f"Erro ao criar a tabela 'withdrawal_history': {e}")
+        finally:
+            if cursor:
+                cursor.close()
+
 login_validator = LoginValidator()

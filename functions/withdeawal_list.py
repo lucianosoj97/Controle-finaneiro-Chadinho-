@@ -13,18 +13,21 @@ def gerenciamento_de_contas():
 
         # Consulta SQL para recuperar os cadastros com deletion_date vazio
         consulta_sql = """
-            SELECT id,
-            name,
-            betting_house,
-            lead_value
-        FROM register;
+            SELECT r.id,
+                   r.name,
+                   r.betting_house,
+                   (SELECT wh.remaining_balance
+                    FROM withdrawal_history wh
+                    WHERE wh.register_id = r.id
+                    ORDER BY wh.timestamp DESC
+                    LIMIT 1) AS remaining_balance
+            FROM register r;
         """
 
         cursor.execute(consulta_sql)
         cadastros = cursor.fetchall()  # Obtém todos os registros
         cursor.close()
         conexao.close()
-        print('cadastros', cadastros)
         return cadastros
 
     except Exception as e:
