@@ -5,7 +5,20 @@ html, body {
     width: 100%;
     height: 100%;
     font-family: Arial, sans-serif; /* Usando Arial como fonte padrão */
-    background-color: rgb(201, 194, 185);
+}
+
+#video-background {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1; /* Coloca o vídeo atrás de todo o conteúdo */
+    object-fit: cover; /* Ajusta o vídeo para preencher o contêiner */
+    object-position: center; /* Centraliza o vídeo no contêiner */
+    opacity: 0.9; /* Define a opacidade do vídeo (entre 0 e 1) */
 }
 
 /* Estilizando o container de login para centralizar seu conteúdo */
@@ -170,26 +183,6 @@ button[type="submit"]:hover {
     text-decoration: none;
     cursor: pointer;
 }
-
-#loadingIndicator {
-    display: none; /* Inicialmente escondido */
-    position: fixed; /* Posicionamento fixo */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
-    z-index: 9999; /* Garante que o indicador fique no topo */
-    display: flex;
-    justify-content: center; /* Centraliza horizontalmente */
-    align-items: center; /* Centraliza verticalmente */
-}
-
-#loadingIndicator img {
-    width: 100px; /* Ajuste conforme necessário */
-    height: auto;
-}
-
 
 .login-btn {
     width: 100%;

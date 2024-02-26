@@ -6,17 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="/static/css/menu.css">
+    <link rel="stylesheet" href="/static/css/video.css">
+    <link rel="stylesheet" href="/static/css/loading.css">
 </head>
 <body>
+    <div id="loadingIndicator" style="display: none;">
+        <img src="/static/gif/loading.gif" alt="Carregando..." />
+    </div>
+    <video autoplay muted loop id="video-background">
+        <source src="/static/video/clouds_-_33542 (Original).mp4" type="video/mp4">
+    </video>
     <div class="login-container">
         <div class="vid-container">
             <div class="inner-container">
                 <div class="box">
                     <h1>Login</h1>
-                    <form id="loginForm">
+                    <form id="loginForm" method="POST" action="/login">
                         <input type="text" placeholder="Username" name="username" required />
                         <input type="password" placeholder="Password" name="password" required />
-                        <button type="button" id="loginButton" class="login-btn">Login</button>
+                        <button type="submit" id="loginButton" class="login-btn">Login</button>
                     </form>
                     <p><a href="#" id="forgotPasswordLink" class="btn">Esqueceu sua senha?</a></p>
                     <a href="/send_whatsapp_message" class="btn">Precisa de um acesso? Cadastro</a>
@@ -36,61 +44,57 @@
             </form>
         </div>
     </div>
-    <div id="loadingIndicator" style="display: none;">
-        <img src="/static/gif/loading.gif" alt="Carregando..." />
-    </div>
 
     <!-- Posicionando a imagem no final do body para que fique no rodapé -->
     <img src="/static/image/Instagram.png" class="img-logo">
     
     <script>
-        document.getElementById('loginButton').addEventListener('click', function() {
-    var username = document.querySelector('input[name="username"]').value;
-    var password = document.querySelector('input[name="password"]').value;
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
 
-    // Exibe o indicador de carregamento
-    document.getElementById('loadingIndicator').style.display = 'flex';
+            var username = document.querySelector('input[name="username"]').value;
+            var password = document.querySelector('input[name="password"]').value;
 
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({username: username, password: password}),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Falha na comunicação com o servidor');
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            window.location.href = data.redirectUrl; // Redireciona para a URL especificada
-            // O indicador de carregamento será ocultado pela própria ação de redirecionamento de página
-        } else {
-            // Esconde o indicador de carregamento somente se não for redirecionar
-            document.getElementById('loadingIndicator').style.display = 'none';
-            Swal.fire({
-                title: 'Erro!',
-                text: data.message,
-                icon: 'error',
-                confirmButtonText: 'OK'
+            // Exibe o indicador de carregamento
+            document.getElementById('loadingIndicator').style.display = 'block';
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: username, password: password}),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Falha na comunicação com o servidor');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirectUrl; // Redireciona para a URL especificada
+                } else {
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                console.error('Erro:', error);
+                Swal.fire({
+                    title: 'Erro!',
+                    text: 'Ocorreu um erro durante o login. Por favor, tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             });
-        }
-    })
-    .catch(error => {
-        // Esconde o indicador de carregamento em caso de erro
-        document.getElementById('loadingIndicator').style.display = 'none';
-        console.error('Erro:', error);
-        Swal.fire({
-            title: 'Erro!',
-            text: 'Ocorreu um erro durante o login. Por favor, tente novamente.',
-            icon: 'error',
-            confirmButtonText: 'OK'
         });
-    });
-});
 
         document.getElementById('forgotPasswordLink').addEventListener('click', function() {
             document.getElementById('resetPasswordModal').style.display = 'block';
@@ -101,51 +105,43 @@
         });
 
         document.getElementById('sendResetCodeButton').addEventListener('click', function() {
-    var email = document.querySelector('#resetPasswordModal input[name="email"]').value;
+            var email = document.querySelector('#resetPasswordModal input[name="email"]').value;
 
-    // Exibe o indicador de carregamento
-    document.getElementById('loadingIndicator').style.display = 'flex';
+            document.getElementById('loadingIndicator').style.display = 'block';
 
-    // Inicia o fetch para verificar o e-mail
-    fetch('/verify_email', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({email: email}),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Esconde o indicador de carregamento assim que receber a resposta
-        document.getElementById('loadingIndicator').style.display = 'none';
+            fetch('/verify_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({email: email}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loadingIndicator').style.display = 'none';
 
-        if (data.exists) {
-            // Se o e-mail existir, redireciona para a próxima página
-            window.location.href = '/change_password'; // Use sua rota de inserção do código
-        } else {
-            // Se o e-mail não existir, mostra um alerta
-            Swal.fire({
-                title: 'Erro!',
-                text: 'E-mail não encontrado. Por favor, verifique e tente novamente.',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                if (data.exists) {
+                    window.location.href = '/change_password';
+                } else {
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'E-mail não encontrado. Por favor, verifique e tente novamente.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch((error) => {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                console.error('Erro:', error);
+                Swal.fire({
+                    title: 'Erro!',
+                    text: 'Houve um problema com a sua solicitação. Por favor, tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             });
-        }
-    })
-    .catch((error) => {
-        // Esconde o indicador de carregamento em caso de erro
-        document.getElementById('loadingIndicator').style.display = 'none';
-
-        // Informa ao usuário que ocorreu um erro
-        console.error('Erro:', error);
-        Swal.fire({
-            title: 'Erro!',
-            text: 'Houve um problema com a sua solicitação. Por favor, tente novamente.',
-            icon: 'error',
-            confirmButtonText: 'OK'
         });
-    });
-});
     </script>
 </body>
 </html>

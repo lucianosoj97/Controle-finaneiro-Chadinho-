@@ -35,6 +35,7 @@ def process_login():
         session.modified = True
         session['logged_in'] = True
         # Retorna uma resposta JSON indicando sucesso e a URL de redirecionamento
+        redirect(url_for('dashboard'))
         return jsonify({'success': True, 'redirectUrl': url_for('dashboard')})
     else:
         # Retorna uma resposta JSON indicando falha
