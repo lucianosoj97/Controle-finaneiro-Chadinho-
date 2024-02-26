@@ -15,7 +15,7 @@ def edit_person(id):
         cursor = conexao.cursor()
 
         buscar_pessoa_query = """
-            SELECT id, name, cpf, birth_date, address, value, percentage FROM register
+            SELECT id, name, cpf, birth_date, address, value, percentage, betting_house FROM register
             WHERE id = %s
         """
         cursor.execute(buscar_pessoa_query, (id,))
@@ -35,7 +35,8 @@ def edit_person(id):
             'birth_date': pessoa[3],
             'address': pessoa[4],
             'value': pessoa[5],
-            'percentage': pessoa[6]
+            'percentage': pessoa[6],
+            'betting_house': pessoa[7],
         }
 
         return render_template('edit.html', person=pessoa_dict)
@@ -44,7 +45,7 @@ def edit_person(id):
         print(f"Erro ao editar pessoa: {e}")
         return redirect(url_for('list_people'))
 
-def update_person(id, name, cpf, birth_date, address, value, percentage):
+def update_person(id, name, cpf, birth_date, address, value, percentage, betting_house):
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
@@ -61,10 +62,10 @@ def update_person(id, name, cpf, birth_date, address, value, percentage):
         # Atualize os dados da pessoa no banco de dados
         atualizar_pessoa_query = """
             UPDATE register
-            SET name = %s, cpf = %s, birth_date = %s, address = %s, value = %s, percentage = %s, owner_value = %s, lead_value = %s, update_date = %s
+            SET name = %s, cpf = %s, birth_date = %s, address = %s, value = %s, percentage = %s, betting_house = %s, owner_value = %s, lead_value = %s, update_date = %s
             WHERE id = %s
         """
-        cursor.execute(atualizar_pessoa_query, (name, cpf, birth_date, address, value, percentage, valor_total, valor_descontado, current_date, id))
+        cursor.execute(atualizar_pessoa_query, (name, cpf, birth_date, address, value, percentage, betting_house, valor_total, valor_descontado, current_date, id))
         conexao.commit()
         cursor.close()
         conexao.close()

@@ -146,9 +146,10 @@ def update_person_route():
         address = request.form['address']
         value = request.form['deposit_amount']
         percentage = request.form['payment_percentage']
+        betting_house = request.form['betting_house']
 
         # Chame a função para atualizar a pessoa no banco de dados
-        if update_person(id, name, cpf, birth_date, address, value, percentage):
+        if update_person(id, name, cpf, birth_date, address, value, percentage, betting_house):
             # Se a atualização for bem-sucedida, redirecione para alguma página
             return redirect(url_for('list_people'))
         else:
@@ -167,7 +168,10 @@ def delete(id):
     cursor = conexao.cursor()
 
     sql_delete_query = """ DELETE FROM register WHERE id = %s """
+    sql_delete2_query = """ DELETE FROM withdrawal_history WHERE register_id = %s """
+
     cursor.execute(sql_delete_query, (str(id),))
+    cursor.execute(sql_delete2_query, (str(id),))
 
     conexao.commit()  # Confirmar a transação
     cursor.close()

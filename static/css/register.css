@@ -138,3 +138,22 @@ input[type="submit"]:hover {
     transform: translateY(-50%) !important; /* Centraliza a seta verticalmente */
     right: 5px !important; /* Distância da seta da borda direita */
 }
+
+#loadingIndicator {
+    display: none; /* Inicialmente escondido */
+    position: fixed; /* Posicionamento fixo */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
+    z-index: 9999; /* Garante que o indicador fique no topo */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+}
+
+#loadingIndicator img {
+    width: 100px; /* Ajuste conforme necessário */
+    height: auto;
+}

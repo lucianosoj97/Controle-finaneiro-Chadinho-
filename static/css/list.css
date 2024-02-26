@@ -185,8 +185,8 @@ a:hover {
 
 .button-container {
     display: flex;
-    justify-content: left; /* Centraliza os botões horizontalmente */
-    align-items: left;
+    justify-content: center; /* Centraliza os botões horizontalmente */
+    align-items: center;
     padding: 20px;
     gap: 30px; /* Espaçamento entre os botões */
 }
@@ -233,4 +233,24 @@ a:hover {
     max-width: 300px; /* Ajuste conforme necessário */
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Estilizando o botão de sacar */
+#btn-saque {
+    background-color: #4CAF50; /* Cor de fundo verde */
+    color: white; /* Cor do texto branco */
+    padding: 10px 20px; /* Espaçamento interno */
+    border: none; /* Sem borda */
+    cursor: pointer; /* Cursor de mão ao passar por cima */
+    border-radius: 5px; /* Borda arredondada */
+}
+
+/* Estilizando o botão de cancelar */
+#btn-cancelar {
+    background-color: #f44336; /* Cor de fundo vermelha */
+    color: white; /* Cor do texto branco */
+    padding: 10px 20px; /* Espaçamento interno */
+    border: none; /* Sem borda */
+    cursor: pointer; /* Cursor de mão ao passar por cima */
+    border-radius: 5px; /* Borda arredondada */
 }
