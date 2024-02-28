@@ -24,9 +24,9 @@ def login():
 
 @app.route('/login', methods=['POST'])
 def process_login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
+    # Acessando dados do formulário
+    username = request.form.get('username')
+    password = request.form.get('password')
 
     if login_validator.validar_credenciais(username, password):
         # Se as credenciais estiverem corretas
@@ -34,12 +34,14 @@ def process_login():
         session['token'] = token
         session.modified = True
         session['logged_in'] = True
-        # Retorna uma resposta JSON indicando sucesso e a URL de redirecionamento
-        redirect(url_for('dashboard'))
-        return jsonify({'success': True, 'redirectUrl': url_for('dashboard')})
+        # Redireciona o usuário para a página do dashboard
+        return redirect(url_for('dashboard'))
     else:
-        # Retorna uma resposta JSON indicando falha
-        return jsonify({'success': False, 'message': "E-mail ou senha incorretos."}), 401
+        # Pode usar flash() para enviar mensagens de erro de volta para o template
+        flash("E-mail ou senha incorretos.", "error")
+        # Redireciona de volta para a página de login ou renderiza novamente o template de login com mensagem de erro
+        return redirect(url_for('login'))  # ou return render_template('login.html', error="E-mail ou senha incorretos.")
+
     
 @app.route('/dashboard')
 def dashboard():

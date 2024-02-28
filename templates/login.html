@@ -49,7 +49,7 @@
     <img src="/static/image/Instagram.png" class="img-logo">
     
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        /*document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Impede o comportamento padrão do formulário
 
             var username = document.querySelector('input[name="username"]').value;
@@ -84,7 +84,7 @@
                     });
                 }
             })
-            /*.catch(error => {
+            .catch(error => {
                 document.getElementById('loadingIndicator').style.display = 'none';
                 console.error('Erro:', error);
                 Swal.fire({
@@ -93,8 +93,21 @@
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });*
-            });*/
-        });
+            });
+        });*/
+
+        $(document).ready(function() {
+            // Se quiser aplicar a todos os links da navegação
+            $('nav a').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+            $('#btn-saque').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+            $('#loginButton').click(function() {
+                $('#loadingIndicator').show(); // Mostra o GIF de carregamento para qualquer link clicado na navegação
+            });
+        })
 
         document.getElementById('forgotPasswordLink').addEventListener('click', function() {
             document.getElementById('resetPasswordModal').style.display = 'block';
