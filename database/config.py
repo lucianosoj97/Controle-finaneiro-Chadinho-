@@ -7,7 +7,6 @@ class DatabaseConfig:
         # Exemplo: 'postgres://user:password@host:port/dbname'
         # Você deve substituí-la pela URL real do seu banco de dados Supabase
         DATABASE_URL = 'postgres://postgres.cpfwmmxlbytjrjcnlnjg:FHDSsnuzXbbA35sT@aws-0-us-east-1.pooler.supabase.com:5432/postgres'
-
         url = urlparse.urlparse(DATABASE_URL)
 
         # Construir e retornar um dicionário com as configurações de conexão

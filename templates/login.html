@@ -84,7 +84,7 @@
                     });
                 }
             })
-            .catch(error => {
+            /*.catch(error => {
                 document.getElementById('loadingIndicator').style.display = 'none';
                 console.error('Erro:', error);
                 Swal.fire({
@@ -92,8 +92,8 @@
                     text: 'Ocorreu um erro durante o login. Por favor, tente novamente.',
                     icon: 'error',
                     confirmButtonText: 'OK'
-                });
-            });
+                });*
+            });*/
         });
 
         document.getElementById('forgotPasswordLink').addEventListener('click', function() {
