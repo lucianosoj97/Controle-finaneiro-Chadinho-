@@ -22,7 +22,12 @@ class LoginValidator:
             self.conexao = None
 
     def validar_credenciais(self, email, senha):
+        self.conexao = None
+
         try:
+            db_config = DatabaseConfig.get_db_config()
+            self.conexao = psycopg2.connect(**db_config)
+
             cursor = self.conexao.cursor()
             comando_sql_verificar_usuario = """
                 SELECT 1 FROM usuário
@@ -42,6 +47,10 @@ class LoginValidator:
         except Exception as e:
             print(f"Erro ao validar credenciais: {e}")
             return False
+
+        finally:
+            if self.conexao is not None:
+                self.conexao.close()
 
     def criar_extensao_uuid_ossp(self):
         try:
