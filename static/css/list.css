@@ -7,10 +7,10 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 70px auto; /* Centraliza o container horizontalmente e aumenta a margem superior */
     padding: 30px; /* Aumenta o padding para 30px */
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(113, 170, 227, 0.8);
     border-radius: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     overflow-x: auto;

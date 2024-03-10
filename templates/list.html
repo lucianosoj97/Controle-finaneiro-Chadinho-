@@ -25,9 +25,6 @@
                 <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="/account_management">Gerenciar Contas</a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="/">Sair</a>
             </li>
         </ul>
@@ -44,21 +41,25 @@
                 <th>CPF</th>
                 <th>Data de Nasc.</th>
                 <th>Endereço</th>
-                <th>Valor Dep.</th>
-                <th>Porcentagem Paga</th>
+                <th>Valor Inves.</th>
+                <th>Valor Receb.</th>
+                <th>Lucro</th>
+                <th>Valor Pago</th>
                 <th>Casa de Aposta</th>
                 <th></th>
                 <th></th>
             </tr>
             {% for cadastro in people %}
             <tr>
-                <td>{{ cadastro[1] }}</td>
-                <td>{{ cadastro[2] }}</td>
+                <td data-name="{{ cadastro[1] }}">{{ cadastro[1] }}</td>
+                <td data-cpf="{{ cadastro[2] }}">{{ cadastro[2] }}</td>
                 <td>{{ cadastro[3] }}</td>
                 <td>{{ cadastro[4] }}</td>
-                <td>{{ cadastro[5] }}</td>
+                <td data-deposit_amount="{{ cadastro[5] }}">{{ cadastro[5] }}</td>
                 <td>{{ cadastro[6] }}</td>
                 <td>{{ cadastro[7] }}</td>
+                <td>{{ cadastro[8] }}</td>
+                <td data-betting-house="{{ cadastro[9] }}">{{ cadastro[9] }}</td>
                 <td><a href="/edit/{{ cadastro[0] }}" class="btn-editar">Editar</a></td>
                 <td><a href="javascript:void(0);" onclick="showDeleteModal('{{ cadastro[0] }}')" class="btn-excluir">Excluir</a></td>
             </tr>
@@ -106,6 +107,27 @@
         function confirmDelete() {
             window.location.href = `/delete/${currentDeleteId}`;
         }
+
+        $(document).ready(function() {
+        // Evento de teclado para filtrar resultados
+            $('#searchInput').keyup(function() {
+                var searchText = $(this).val().toLowerCase();
+
+                // Itera por todas as linhas da tabela
+                $('table tr').each(function(index) {
+                    if (index !== 0) { // Pula o cabeçalho da tabela
+                        var nome = $(this).find('td[data-name]').text().toLowerCase();
+                        var cpf = $(this).find('td[data-cpf]').text().toLowerCase();
+                        var bettingHouse = $(this).find('td[data-betting-house]').text().toLowerCase();
+                        var depositAmount = $(this).find('td[data-deposit_amount]').text().toLowerCase();
+
+                        // Verifica se a linha deve ser mostrada ou oculta
+                        var shouldShow = nome.indexOf(searchText) !== -1 || cpf.indexOf(searchText) !== -1 || bettingHouse.indexOf(searchText) !== -1;
+                        $(this).toggle(shouldShow);
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

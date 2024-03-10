@@ -42,59 +42,60 @@ def process_login():
         # Redireciona de volta para a página de login ou renderiza novamente o template de login com mensagem de erro
         return redirect(url_for('login'))  # ou return render_template('login.html', error="E-mail ou senha incorretos.")
 
-    
 @app.route('/dashboard')
 def dashboard():
     if 'token' not in session:
-        # Se o token não estiver presente na sessão, redirecione para a página de login
         return redirect(url_for('login'))
 
-    # Verificar se o token é válido (você precisará implementar esta função)
     if not token_valido(session['token']):
-        # Se o token não for válido, redirecione para a página de login
         return redirect(url_for('login'))
 
-    # Obter dados do dashboard
-    valor_limpo, valor_arrecadado, porcentagem_leads = get_dashboard_data()
-    valor_limpo_str = '{:,.2f}'.format(valor_limpo).replace(',', 'v').replace('.', ',').replace('v', '.')
-    valor_arrecadado_str = '{:,.2f}'.format(valor_arrecadado).replace(',', 'v').replace('.', ',').replace('v', '.')
-    porcentagem_leads_str = '{:,.2f}'.format(porcentagem_leads).replace(',', 'v').replace('.', ',').replace('v', '.')
+    deposit_amount, amount_received, positive_balance, payment_percentage = get_dashboard_data()
 
-    return render_template('dashboard.html', valor_limpo=valor_limpo_str, valor_arrecadado=valor_arrecadado_str, porcentagem_leads=porcentagem_leads_str)
+    # Aplicar a formatação aos valores
+    deposit_amount = formatar_como_real(deposit_amount)
+    amount_received = formatar_como_real(amount_received)
+    positive_balance = formatar_como_real(positive_balance)
+    payment_percentage = formatar_como_real(payment_percentage)
+
+    # Passar valores para o template usando argumentos nomeados
+    return render_template(
+        'dashboard.html',
+        deposit_amount=deposit_amount,
+        amount_received=amount_received,
+        positive_balance=positive_balance,
+        payment_percentage=payment_percentage
+    )
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    # Verificar se o usuário está autenticado
     if 'token' not in session or not token_valido(session['token']):
-        # Se o token não estiver presente ou não for válido, redirecione para a página de login
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Obtenha os dados do formulário HTML
-        nome = request.form['full_name']
+        full_name = request.form['full_name']
         cpf = request.form['cpf']
         birth_date = request.form['birth_date']
-        endereco = request.form['address']
-        valor_depositado = request.form['deposit_amount']
-        porcentagem_pago = request.form['payment_percentage']
+        address = request.form['address']
+        deposit_amount = request.form['deposit_amount']
+        amount_received = request.form['amount_received']
+        positive_balance = request.form['positive_balance']
+        payment_percentage = request.form['payment_percentage']
         betting_house = request.form['betting_house']
+        print('deposit_amount:', deposit_amount)
 
+        criar_registro(full_name, cpf, birth_date, address, deposit_amount, amount_received, positive_balance, payment_percentage, betting_house)
 
-        # Chame a função criar_registro com os dados do formulário
-        criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago, betting_house)
-
-        return redirect('/dashboard')  # Redirecione para a página inicial após a criação do registro
-
+        flash('Cadastro realizado com sucesso!', 'success')
+        return redirect('/list')
     return render_template('register.html')
 
 @app.route('/list')
 def list_people():
-    # Verificar se o usuário está autenticado
     if 'token' not in session or not token_valido(session['token']):
         # Se o token não estiver presente ou não for válido, redirecione para a página de login
         return redirect(url_for('login'))
 
-    # Obtenha os cadastros do banco de dados
     cadastros = obter_cadastros()
 
     if not cadastros:
@@ -102,18 +103,11 @@ def list_people():
     formatted_cadastros = []
     for cadastro in cadastros:
         formatted_cadastro = list(cadastro)
-
         formatted_cadastro[3] = cadastro[3].strftime("%d/%m/%Y")
-        try:
-            # Convertendo a string para float antes de formatar
-            valor_float = float(formatted_cadastro[5])
-            # Formatação como valor monetário
-            formatted_cadastro[5] = 'R$ {:,.2f}'.format(valor_float).replace(',', 'v').replace('.', ',').replace('v', '.')
-        except ValueError:
-            # Caso não seja possível converter para float, mantém o valor original ou trata o erro
-            formatted_cadastro[5] = f'R$ {formatted_cadastro[5]}'
-        # Presumindo que cadastro[6] é um valor numérico e pode ser diretamente formatado como porcentagem
-        formatted_cadastro[6] = f'{cadastro[6]}%'
+        formatted_cadastro[5] = f'R$ {formatted_cadastro[5]:,.2f}'.replace(',', 'v').replace('.', ',').replace('v', '.') if formatted_cadastro[5] else 'R$ 0,00'
+        formatted_cadastro[6] = f'R$ {formatted_cadastro[6]:,.2f}'.replace(',', 'v').replace('.', ',').replace('v', '.') if formatted_cadastro[6] else 'R$ 0,00'
+        formatted_cadastro[7] = f'R$ {formatted_cadastro[7]:,.2f}'.replace(',', 'v').replace('.', ',').replace('v', '.') if formatted_cadastro[7] else 'R$ 0,00'
+        formatted_cadastro[8] = f'R$ {formatted_cadastro[8]:,.2f}'.replace(',', 'v').replace('.', ',').replace('v', '.') if formatted_cadastro[8] else 'R$ 0,00'
         formatted_cadastros.append(formatted_cadastro)
 
     return render_template('list.html', people=formatted_cadastros)
@@ -147,12 +141,15 @@ def update_person_route():
         cpf = request.form['cpf']
         birth_date = request.form['birth_date']
         address = request.form['address']
-        value = request.form['deposit_amount']
-        percentage = request.form['payment_percentage']
+        deposit_amount = request.form['deposit_amount']
+        amount_received = request.form['amount_received']
+        positive_balance = request.form['positive_balance']
+        payment_percentage = request.form['payment_percentage']
         betting_house = request.form['betting_house']
 
+
         # Chame a função para atualizar a pessoa no banco de dados
-        if update_person(id, name, cpf, birth_date, address, value, percentage, betting_house):
+        if update_person(id, name, cpf, birth_date, address, deposit_amount,amount_received, positive_balance, payment_percentage, betting_house):
             # Se a atualização for bem-sucedida, redirecione para alguma página
             return redirect(url_for('list_people'))
         else:
@@ -295,8 +292,14 @@ def gerar_relatorio():
 
 @app.route('/report')
 def configuracao_relatorio():
-    # Por exemplo, buscar uma lista de casas de aposta do banco de dados para preencher o dropdown.
 
     return render_template('report.html')
+
+def formatar_como_real(valor):
+    if valor is None or valor == 0:
+        return 'R$ 0,00'
+    else:
+        return 'R$ {:,.2f}'.format(valor).replace(',', 'v').replace('.', ',').replace('v', '.')
+
 if __name__ == '__main__':
     app.run(debug=True)

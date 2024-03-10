@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
-    <!-- Adicione o link para o arquivo CSS do Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Adicione o link para o arquivo CSS do Select2 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    <!-- Seus arquivos CSS personalizados -->
     <link rel="stylesheet" href="/static/css/register.css">
     <link rel="stylesheet" href="/static/css/loading.css">
 </head>
@@ -17,7 +14,7 @@
         <img src="/static/gif/loading.gif" alt="Carregando..." />
     </div>
     <nav class="navbar custom-navbar flex-column custom-bg-color">
-        <ul class="navbar-nav flex-row"> <!-- Adicionei a classe flex-row -->
+        <ul class="navbar-nav flex-row">
             <li class="nav-item">
                 <a class="nav-link" href="/dashboard">Tela Inicial</a>
             </li>
@@ -26,9 +23,6 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/list">Lista/Editar Cadastros</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="/account_management">Gerenciar Contas</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/">Sair</a>
@@ -57,12 +51,20 @@
                 <input type="text" id="address" name="address" value="{{ person.address }}" required>
             </div>
             <div class="label-input">
-                <label class="label-text" for="deposit_amount">Valor depositado:</label>
-                <input type="text" id="deposit_amount" name="deposit_amount" value="R$ {{ person.value }}" required>
+                <label class="label-text" for="deposit_amount">Valor Investido:</label>
+                <input type="text" id="deposit_amount" name="deposit_amount" value="{{ person.deposit_amount }}" required>
             </div>
             <div class="label-input">
-                <label class="label-text" for="payment_percentage">Porcentagem paga:</label>
-                <input type="text" id="payment_percentage" name="payment_percentage" value="{{ person.percentage }}%" required>
+                <label class="label-text" for="amount_received">Valor Recebido:</label>
+                <input type="text" id="amount_received" name="amount_received" value="{{ person.amount_received }}" required>
+            </div>
+            <div class="label-input">
+                <label class="label-text" for="positive_balance">Lucro:</label>
+                <input type="text" id="positive_balance" name="positive_balance" value="{{ person.positive_balance }}" required>
+            </div>
+            <div class="label-input">
+                <label class="label-text" for="payment_percentage">Valor Pago (10%):</label>
+                <input type="text" id="payment_percentage" name="payment_percentage" value="{{ person.payment_percentage }}" required>
             </div>
             <div class="label-input">
                 <label class="label-text" for="betting_house">Casa de aposta:</label>
@@ -79,18 +81,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="/static/js/bettingHouses.js"></script>
     <script>
+        function formatarCPF(campo) {
+            campo.value = campo.value.replace(/\D/g, '');
+            campo.value = campo.value.replace(/(\d{3})(\d)/, '$1.$2');
+            campo.value = campo.value.replace(/(\d{3})(\d)/, '$1.$2');
+            campo.value = campo.value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        }
+        function formatarValorEmTempoReal(input) {
+            let valor = input.value.replace(/\D/g, '');
+            valor = (valor / 100).toFixed(2) + '';
+            valor = valor.replace(".", ",");
+            valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            input.value = `R$ ${valor}`;
+        }
+        function calcularLucroEValorPago() {
+            var deposito = parseFloat(document.getElementById('deposit_amount').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+            var recebido = parseFloat(document.getElementById('amount_received').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+            var lucro = recebido - deposito;
+            var dezPorCentoDoLucro = lucro * 0.10;
+            document.getElementById('positive_balance').value = lucro.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+            document.getElementById('payment_percentage').value = dezPorCentoDoLucro.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
+        }
         $(document).ready(function() {
-            // Inicializa o Select2 no elemento
             $('.select2').select2({
                 placeholder: "Selecione uma casa de aposta",
                 allowClear: true
             });
-
-            // Seletor para o formulário de edição
-            var editForm = $('#editForm');
-
-            // Quando o formulário for enviado, mostrar o GIF de carregamento
-            editForm.submit(function() {
+            $('#deposit_amount').on('input', function() {
+                formatarValorEmTempoReal(this);
+                calcularLucroEValorPago();
+            });
+            $('#amount_received').on('input', function() {
+                formatarValorEmTempoReal(this);
+                calcularLucroEValorPago();
+            });
+            calcularLucroEValorPago();
+            $('#editForm').on('submit', function() {
                 $('#loadingIndicator').show();
             });
         });

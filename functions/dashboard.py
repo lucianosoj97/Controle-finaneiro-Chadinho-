@@ -14,34 +14,48 @@ def get_dashboard_data():
 
         # Consultar o valor limpo
         cursor.execute("""
-            SELECT SUM(owner_value::numeric)
+            SELECT SUM(deposit_amount::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL
         """, (primeiro_dia_do_mes_atual, primeiro_dia_do_mes_atual))
-        valor_limpo = cursor.fetchone()[0] or 0
+        deposit_amount = cursor.fetchone()[0] or 0
 
         # Consultar o valor pago
         cursor.execute("""
-            SELECT SUM(value::numeric)
+            SELECT SUM(amount_received::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL
         """, (primeiro_dia_do_mes_atual, primeiro_dia_do_mes_atual))
-        valor_arrecadado = cursor.fetchone()[0] or 0
+        amount_received = cursor.fetchone()[0] or 0
 
         # Consultar a porcentagem de leads
         cursor.execute("""
-            SELECT SUM(lead_value::numeric)
+            SELECT SUM(positive_balance::numeric)
             FROM register
             WHERE (creation_date >= %s OR update_date >= %s)
             AND deletion_date IS NULL
         """, (primeiro_dia_do_mes_atual, primeiro_dia_do_mes_atual))
-        porcentagem_leads = cursor.fetchone()[0] or 0
+        positive_balance = cursor.fetchone()[0] or 0
+
+
+        cursor.execute("""
+            SELECT SUM(payment_percentage::numeric)
+            FROM register
+            WHERE (creation_date >= %s OR update_date >= %s)
+            AND deletion_date IS NULL
+        """, (primeiro_dia_do_mes_atual, primeiro_dia_do_mes_atual))
+        payment_percentage = cursor.fetchone()[0] or 0
 
         conexao.close()
 
-        return valor_limpo, valor_arrecadado, porcentagem_leads
+        print('deposit_amount:', deposit_amount)
+        print('amount_received:', amount_received)
+        print('positive_balance:', positive_balance)
+        print('payment_percentage', payment_percentage)
+
+        return deposit_amount, amount_received, positive_balance, payment_percentage
 
     except Exception as e:
         print(f"Erro ao obter dados do dashboard: {e}")

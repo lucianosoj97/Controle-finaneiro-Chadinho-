@@ -1,11 +1,12 @@
 import psycopg2
-from flask import redirect, url_for, render_template
+from flask import redirect, url_for, render_template, flash
 from database.config import DatabaseConfig
 from datetime import datetime
 from decimal import Decimal
 import logging
+import locale
 
-# Configurar o registro
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 logging.basicConfig(filename='update_person_log.log', level=logging.INFO)
 
 def edit_person(id):
@@ -15,7 +16,7 @@ def edit_person(id):
         cursor = conexao.cursor()
 
         buscar_pessoa_query = """
-            SELECT id, name, cpf, birth_date, address, value, percentage, betting_house FROM register
+            SELECT id, name, cpf, birth_date , address, deposit_amount, amount_received, positive_balance, payment_percentage, betting_house FROM register
             WHERE id = %s
         """
         cursor.execute(buscar_pessoa_query, (id,))
@@ -24,7 +25,6 @@ def edit_person(id):
         conexao.close()
 
         if pessoa is None:
-            # Se não encontrar a pessoa pelo ID, redirecione para a página de listagem
             return redirect(url_for('list_people'))
 
         # Converta os valores da pessoa em um dicionário para facilitar o acesso aos dados no template
@@ -34,9 +34,11 @@ def edit_person(id):
             'cpf': pessoa[2],
             'birth_date': pessoa[3],
             'address': pessoa[4],
-            'value': pessoa[5],
-            'percentage': pessoa[6],
-            'betting_house': pessoa[7],
+            'deposit_amount': locale.currency(pessoa[5], grouping=True),
+            'amount_received': locale.currency(pessoa[6], grouping=True),
+            'positive_balance': locale.currency(pessoa[7], grouping=True),
+            'payment_percentage': locale.currency(pessoa[8], grouping=True),
+            'betting_house': pessoa[9],
         }
 
         return render_template('edit.html', person=pessoa_dict)
@@ -45,7 +47,7 @@ def edit_person(id):
         print(f"Erro ao editar pessoa: {e}")
         return redirect(url_for('list_people'))
 
-def update_person(id, name, cpf, birth_date, address, value, percentage, betting_house):
+def update_person(id, name, cpf, birth_date, address, deposit_amount,amount_received, positive_balance, payment_percentage, betting_house):
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
@@ -54,38 +56,25 @@ def update_person(id, name, cpf, birth_date, address, value, percentage, betting
         # Obtenha a data atual
         current_date = datetime.now().strftime('%Y-%m-%d')
 
-        # Calcula os valores de owner_value e lead_value
-        value = Decimal(value.replace('R$', '').replace('.', '').replace(',', ''))
-        percentage = Decimal(percentage.replace('%', ''))
-        valor_total, valor_descontado = calcular_valor_descontado(value, percentage)
+        deposit_amount = Decimal(deposit_amount.replace('R$', '').replace('.', '').replace(',', '.'))
+        amount_received = Decimal(amount_received.replace('R$', '').replace('.', '').replace(',', '.'))
+        positive_balance = Decimal(positive_balance.replace('R$', '').replace('.', '').replace(',', '.'))
+        payment_percentage = Decimal(payment_percentage.replace('R$', '').replace('.', '').replace(',', '.'))
 
         # Atualize os dados da pessoa no banco de dados
         atualizar_pessoa_query = """
             UPDATE register
-            SET name = %s, cpf = %s, birth_date = %s, address = %s, value = %s, percentage = %s, betting_house = %s, owner_value = %s, lead_value = %s, update_date = %s
+            SET name = %s, cpf = %s, birth_date = %s, address = %s, deposit_amount = %s, amount_received = %s, positive_balance = %s, payment_percentage = %s, betting_house = %s, update_date = %s
             WHERE id = %s
         """
-        cursor.execute(atualizar_pessoa_query, (name, cpf, birth_date, address, value, percentage, betting_house, valor_total, valor_descontado, current_date, id))
+        cursor.execute(atualizar_pessoa_query, (name, cpf, birth_date, address, deposit_amount, amount_received, positive_balance, payment_percentage, betting_house, current_date, id))
         conexao.commit()
         cursor.close()
         conexao.close()
 
-        # Log da atualização bem-sucedida
-        logging.info(f"Atualização bem-sucedida: ID={id}, Nome={name}, CPF={cpf}, Data de Nascimento={birth_date}, Endereço={address}, Valor={value}, Porcentagem={percentage}, Valor Total={valor_total}, Valor Descontado={valor_descontado}, Data de Atualização={current_date}")
-
-        return True  # Indica que a atualização foi bem-sucedida
+        flash('Cadastro realizado com sucesso!', 'success')
+        return True
 
     except Exception as e:
         logging.error(f"Erro ao atualizar pessoa: {e}")
         return False  # Indica que ocorreu um erro na atualização
-
-def calcular_valor_descontado(valor_depositado, porcentagem_pago):
-    try:
-        valor_total = valor_depositado - (valor_depositado * (porcentagem_pago / 100))
-        valor_total = valor_total.quantize(Decimal('0.00'))
-        valor_descontado = valor_depositado - valor_total
-        return valor_total, valor_descontado
-
-    except Exception as e:
-        print(f"Erro ao calcular valor descontado: {e}")
-        return None, None

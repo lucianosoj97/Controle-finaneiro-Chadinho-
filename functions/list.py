@@ -2,7 +2,6 @@ import psycopg2
 from database.config import DatabaseConfig
 import logging
 
-# Configurando o registro
 logging.basicConfig(level=logging.DEBUG)
 
 def obter_cadastros():
@@ -13,9 +12,8 @@ def obter_cadastros():
 
         # Consulta SQL para recuperar os cadastros com deletion_date vazio
         consulta_sql = """
-            SELECT id, name, cpf,birth_date , address, value, percentage, betting_house
+            SELECT id, name, cpf, birth_date , address, deposit_amount, amount_received, positive_balance, payment_percentage, betting_house
             FROM register
-            WHERE deletion_date IS NULL
         """
 
         cursor.execute(consulta_sql)

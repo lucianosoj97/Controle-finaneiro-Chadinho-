@@ -5,56 +5,34 @@ from datetime import datetime
 from flask import flash, redirect, url_for
 
 
-def criar_registro(nome, cpf, birth_date, endereco, valor_depositado, porcentagem_pago, betting_house):
+def criar_registro(full_name, cpf, birth_date, address, deposit_amount, amount_received, positive_balance, payment_percentage, betting_house):
     try:
         db_config = DatabaseConfig.get_db_config()
         conexao = psycopg2.connect(**db_config)
         cursor = conexao.cursor()
 
-        valor_depositado_formatado = Decimal(valor_depositado.replace('R$', '').replace('.', '').replace(',', '.'))
-        porcentagem_pago_formatada = Decimal(porcentagem_pago.replace('%', ''))
+        # Assegure-se de que 'deposit_amount' e 'payment_percentage' são passados como strings que se parecem com valores monetários, por exemplo 'R$ 1.000,50' e '10%', respectivamente.
+        deposit_amount = Decimal(deposit_amount.replace('R$', '').replace('.', '').replace(',', '.'))
+        amount_received = Decimal(amount_received.replace('R$', '').replace('.', '').replace(',', '.'))
+        positive_balance = Decimal(positive_balance.replace('R$', '').replace('.', '').replace(',', '.'))
+        payment_percentage = Decimal(payment_percentage.replace('R$', '').replace('.', '').replace(',', '.'))
+
         current_date = datetime.now().strftime('%Y-%m-%d')
 
-        valor_total, valor_descontado = calcular_valor_descontado(valor_depositado_formatado, porcentagem_pago_formatada)
-        description = 'Valor inicial depositado'
-
-        # Modificado para retornar o id gerado
         inserir_registro_query = """
-            INSERT INTO register (name, cpf, birth_date, address, value, lead_value, owner_value, percentage, creation_date, betting_house)
+            INSERT INTO register (name, cpf, birth_date, address, deposit_amount, amount_received, positive_balance, payment_percentage, creation_date, betting_house)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id;
         """
 
-        # Executa a inserção e recupera o id gerado
-        cursor.execute(inserir_registro_query, (nome, cpf, birth_date, endereco, valor_depositado_formatado, valor_descontado, valor_total, porcentagem_pago_formatada, current_date, betting_house))
-        register_id = cursor.fetchone()[0]  # Recupera o id gerado
-
-        # Inserir na tabela withdrawal_history
-        inserir_withdrawal_history_query = """
-            INSERT INTO withdrawal_history (register_id, withdrawn_amount, initial_balance, remaining_balance, description)
-            VALUES (%s, %s, %s, %s, %s)
-        """
-        cursor.execute(inserir_withdrawal_history_query, (register_id, 0, valor_total, valor_total, description))
+        cursor.execute(inserir_registro_query, (full_name, cpf, birth_date, address, deposit_amount, amount_received, positive_balance, payment_percentage, current_date, betting_house))
+        register_id = cursor.fetchone()[0]
 
         conexao.commit()
         cursor.close()
         conexao.close()
 
-        flash("Registro criado com sucesso!", "success")
-        return redirect(url_for('list_people'))
-
     except Exception as e:
+        conexao.rollback()
         print(f"Erro ao criar registro: {e}")
-        flash("Erro ao criar registro.", "error")
         return redirect(url_for('register'))
-
-def calcular_valor_descontado(valor_depositado, porcentagem_pago):
-    try:
-        valor_total = valor_depositado - (valor_depositado * (porcentagem_pago / 100))
-        valor_total = valor_total.quantize(Decimal('0.00'))
-        valor_descontado = valor_depositado - valor_total
-        return valor_total, valor_descontado
-
-    except Exception as e:
-        print(f"Erro ao calcular valor descontado: {e}")
-        return None, None

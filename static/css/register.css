@@ -7,19 +7,19 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Alterado para min-height para garantir que o conteúdo alcance toda a altura da tela */
-    background-color: #f0f0f0;
+    min-height: 110vh; /* Alterado para min-height para garantir que o conteúdo alcance toda a altura da tela */
+    background-color: #ffffff;
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(113, 170, 227, 0.8);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 80%; /* Largura do contêiner */
     max-width: 600px; /* Largura máxima do contêiner */
-    margin-top: 20px; /* Adiciona uma margem superior para afastar o conteúdo da navbar */
+    margin-top: 30px; /* Adiciona uma margem superior para afastar o conteúdo da navbar */
 }
 
 h1 {
@@ -34,7 +34,7 @@ form {
 .label-input {
     display: flex;
     align-items: center;
-    margin-bottom: 15px; /* Espaçamento inferior do rótulo */
+    margin-bottom: 10px; /* Espaçamento inferior do rótulo */
 }
 
 .label-text {
@@ -55,8 +55,8 @@ input[type="date"] {
 
 input[type="submit"] {
     width: 100%;
-    margin-top: 20px;
-    padding: 10px;
+    margin-top: 15px;
+    padding: 5px;
     background-color: #0056A6;
     border: none;
     border-radius: 5px;
@@ -67,7 +67,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #0056A6;
+    background-color: #0c804a;
 }
 
 .custom-navbar {
@@ -157,3 +157,14 @@ input[type="submit"]:hover {
     width: 100px; /* Ajuste conforme necessário */
     height: auto;
 }
+
+.alert-fixed {
+    position: fixed;
+    top: 50px; /* Ajuste conforme necessário para posicionar um pouco mais abaixo */
+    left: 50%; /* Centraliza o alerta horizontalmente */
+    transform: translateX(-50%); /* Desloca o alerta para a esquerda pela metade de sua largura */
+    z-index: 1050; /* Bootstrap modal z-index é 1040, então 1050 garante que fique por cima */
+    display: inline-block; /* Faz com que o alerta se ajuste ao conteúdo */
+    padding: 0.75rem 1.25rem; /* Espaçamento interno padrão do alerta do Bootstrap */
+}
+
