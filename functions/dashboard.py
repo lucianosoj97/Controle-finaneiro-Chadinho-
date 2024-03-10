@@ -50,11 +50,6 @@ def get_dashboard_data():
 
         conexao.close()
 
-        print('deposit_amount:', deposit_amount)
-        print('amount_received:', amount_received)
-        print('positive_balance:', positive_balance)
-        print('payment_percentage', payment_percentage)
-
         return deposit_amount, amount_received, positive_balance, payment_percentage
 
     except Exception as e:
