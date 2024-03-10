@@ -4,9 +4,7 @@ from database.config import DatabaseConfig
 from datetime import datetime
 from decimal import Decimal
 import logging
-import locale
 
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 logging.basicConfig(filename='update_person_log.log', level=logging.INFO)
 
 def edit_person(id):
