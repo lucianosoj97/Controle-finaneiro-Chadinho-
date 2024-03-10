@@ -34,10 +34,10 @@ def edit_person(id):
             'cpf': pessoa[2],
             'birth_date': pessoa[3],
             'address': pessoa[4],
-            'deposit_amount': locale.currency(pessoa[5], grouping=True),
-            'amount_received': locale.currency(pessoa[6], grouping=True),
-            'positive_balance': locale.currency(pessoa[7], grouping=True),
-            'payment_percentage': locale.currency(pessoa[8], grouping=True),
+            'deposit_amount': formatar_como_real(pessoa[5]),
+            'amount_received': formatar_como_real(pessoa[6]),
+            'positive_balance': formatar_como_real(pessoa[7]),
+            'payment_percentage': formatar_como_real(pessoa[8]),
             'betting_house': pessoa[9],
         }
 
@@ -78,3 +78,9 @@ def update_person(id, name, cpf, birth_date, address, deposit_amount,amount_rece
     except Exception as e:
         logging.error(f"Erro ao atualizar pessoa: {e}")
         return False  # Indica que ocorreu um erro na atualização
+
+def formatar_como_real(valor):
+    if valor is None:
+        return 'R$ 0,00'
+    valor_formatado = f'R$ {valor:,.2f}'.replace('.', 'X').replace(',', '.').replace('X', ',')
+    return valor_formatado

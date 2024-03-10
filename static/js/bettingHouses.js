@@ -51,6 +51,7 @@ const bettingHouses = [
     "Betdaq",
     "QuinnBet",
     "Betano",
+    "Stake",
 ];
 
 $(document).ready(function() {
